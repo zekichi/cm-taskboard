@@ -1,96 +1,99 @@
 import { Search, X } from "lucide-react";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/select";
+} from "@/components/ui/select";
+import {
+  ALL_PLATFORMS_FILTER,
+  ALL_STATUSES_FILTER,
+  PLATFORM_OPTIONS,
+  TASK_STATUS_OPTIONS,
+} from "@/constants/task-options";
 
-const platforms = [
-  "Todas",
-  "Instagram",
-  "TikTok",
-  "Facebook",
-  "Twitter/X",
-  "LinkedIn",
-  "YouTube",
-  "Pinterest",
-  "Otra",
+const platformFilters = [ALL_PLATFORMS_FILTER, ...PLATFORM_OPTIONS];
+const statusFilters = [
+  { key: ALL_STATUSES_FILTER, label: ALL_STATUSES_FILTER },
+  ...TASK_STATUS_OPTIONS,
 ];
-
-const statuses = ["Todos", "pendiente", "en diseño", "aprobado", "publicado"];
 
 export default function FilterBar({ filters, onFilterChange }) {
   const hasFilters =
     filters.search ||
-    filters.platform !== "Todas" ||
-    filters.status !== "Todos";
+    filters.platform !== ALL_PLATFORMS_FILTER ||
+    filters.status !== ALL_STATUSES_FILTER;
 
   const clearFilters = () => {
-    onFilterChange({ search: "", platform: "Todas", status: "Todos" });
+    onFilterChange({
+      search: "",
+      platform: ALL_PLATFORMS_FILTER,
+      status: ALL_STATUSES_FILTER,
+    });
   };
 
   return (
     <div className="flex flex-col sm:flex-row gap-3">
-      {/* Search */}
       <div className="relative flex-1">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           placeholder="Buscar tareas..."
           className="pl-9"
           value={filters.search}
-          onChange={(e) =>
-            onFilterChange({ ...filters, search: e.target.value })
+          onChange={(event) =>
+            onFilterChange({ ...filters, search: event.target.value })
           }
         />
       </div>
 
-      {/* Filters */}
       <div className="flex gap-2">
-        {/* Platform */}
         <Select
           value={filters.platform}
-          onValueChange={(v) => onFilterChange({ ...filters, platform: v })}
+          onValueChange={(value) =>
+            onFilterChange({ ...filters, platform: value })
+          }
         >
           <SelectTrigger className="w-[140px]">
             <SelectValue placeholder="Plataforma" />
           </SelectTrigger>
           <SelectContent>
-            {platforms.map((p) => (
-              <SelectItem key={p} value={p}>
-                {p}
+            {platformFilters.map((platform) => (
+              <SelectItem key={platform} value={platform}>
+                {platform}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
 
-        {/* Status */}
         <Select
           value={filters.status}
-          onValueChange={(v) => onFilterChange({ ...filters, status: v })}
+          onValueChange={(value) =>
+            onFilterChange({ ...filters, status: value })
+          }
         >
           <SelectTrigger className="w-[140px]">
             <SelectValue placeholder="Estado" />
           </SelectTrigger>
           <SelectContent>
-            {statuses.map((s) => (
-              <SelectItem key={s} value={s} className="capitalize">
-                {s}
+            {statusFilters.map((status) => (
+              <SelectItem key={status.key} value={status.key}>
+                {status.label}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
 
-        {/* Clear filters */}
         {hasFilters && (
           <Button
             variant="ghost"
             size="icon"
             onClick={clearFilters}
             className="shrink-0"
+            aria-label="Limpiar filtros"
           >
             <X className="h-4 w-4" />
           </Button>

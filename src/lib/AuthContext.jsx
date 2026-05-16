@@ -1,5 +1,6 @@
-import { createContext, useContext, useState, useEffect } from "react";
-import { api } from "../api/apiClient";
+import { createContext, useContext, useEffect, useState } from "react";
+
+import { api } from "@/api/apiClient";
 
 const AuthContext = createContext();
 
@@ -8,9 +9,9 @@ export function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Cargar sesión desde localStorage
   useEffect(() => {
     const token = localStorage.getItem("auth_token");
+
     if (!token) {
       setLoading(false);
       return;
@@ -24,6 +25,7 @@ export function AuthProvider({ children }) {
       })
       .catch(() => {
         localStorage.removeItem("auth_token");
+        setUser(null);
         setIsAuthenticated(false);
       })
       .finally(() => setLoading(false));
@@ -59,6 +61,10 @@ export function AuthProvider({ children }) {
 
 export function useAuth() {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
+
+  if (!ctx) {
+    throw new Error("useAuth must be used within AuthProvider");
+  }
+
   return ctx;
 }

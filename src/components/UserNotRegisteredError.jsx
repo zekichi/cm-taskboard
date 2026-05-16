@@ -1,11 +1,11 @@
-export default function AccessDenied() {
+export default function UserNotRegisteredError() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-background">
-      <div className="max-w-md w-full p-8 bg-card rounded-lg shadow border border-border">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-background p-6">
+      <div className="max-w-md w-full rounded-lg border border-border bg-card p-8 shadow">
         <div className="text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 mb-6 rounded-full bg-red-100">
+          <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-red-100 mb-6">
             <svg
-              className="w-8 h-8 text-red-600"
+              className="h-8 w-8 text-red-600"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -27,7 +27,7 @@ export default function AccessDenied() {
             No tienes permisos para acceder a esta sección.
           </p>
 
-          <div className="p-4 bg-secondary rounded-md text-sm text-muted-foreground">
+          <div className="rounded-md bg-secondary p-4 text-sm text-muted-foreground">
             <p>Posibles soluciones:</p>
             <ul className="list-disc list-inside mt-2 space-y-1">
               <li>Verifica tu cuenta o sesión</li>

@@ -1,150 +1,138 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Loader2 } from "lucide-react";
 
+import { useSaveTask } from "@/api/tasks";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "../ui/dialog";
-
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import { Textarea } from "../ui/textarea";
-
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/select";
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  PLATFORM_OPTIONS,
+  TASK_PRIORITIES,
+  TASK_STATUS,
+  TASK_STATUS_OPTIONS,
+} from "@/constants/task-options";
 
-import { Loader2 } from "lucide-react";
-import { api } from "../../api/apiClient";
-
-const platforms = [
-  "Instagram",
-  "TikTok",
-  "Facebook",
-  "Twitter/X",
-  "LinkedIn",
-  "YouTube",
-  "Pinterest",
-  "Otra",
-];
-
-const statuses = ["pendiente", "en diseño", "aprobado", "publicado"];
-const priorities = ["baja", "media", "alta"];
+const initialForm = {
+  title: "",
+  description: "",
+  platform: "Instagram",
+  status: TASK_STATUS.PENDING,
+  due_date: "",
+  priority: "media",
+};
 
 export default function TaskFormDialog({ open, onOpenChange, task, onSaved }) {
-  const [form, setForm] = useState({
-    title: "",
-    description: "",
-    platform: "Instagram",
-    status: "pendiente",
-    due_date: "",
-    priority: "media",
-  });
+  const saveTask = useSaveTask();
+  const [form, setForm] = useState(initialForm);
+  const [error, setError] = useState("");
 
-  const [saving, setSaving] = useState(false);
-
-  // Cargar datos si estamos editando
   useEffect(() => {
     if (task) {
       setForm({
         title: task.title || "",
         description: task.description || "",
-        platform: task.platform || "Instagram",
-        status: task.status || "pendiente",
+        platform: task.platform || initialForm.platform,
+        status: task.status || initialForm.status,
         due_date: task.due_date || "",
-        priority: task.priority || "media",
+        priority: task.priority || initialForm.priority,
       });
     } else {
-      setForm({
-        title: "",
-        description: "",
-        platform: "Instagram",
-        status: "pendiente",
-        due_date: "",
-        priority: "media",
-      });
+      setForm(initialForm);
     }
+
+    setError("");
   }, [task, open]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setSaving(true);
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setError("");
 
     try {
-      if (task?.id) {
-        // Editar
-        await api.patch(`/tasks/${task.id}`, form);
-      } else {
-        // Crear
-        await api.post("/tasks", form);
-      }
-
+      await saveTask.mutateAsync({
+        id: task?.id,
+        payload: form,
+      });
       onSaved?.();
       onOpenChange(false);
-    } catch (error) {
-      console.error("Error guardando tarea:", error);
-    } finally {
-      setSaving(false);
+    } catch {
+      setError("No se pudo guardar la tarea. Revisa los datos e intenta otra vez.");
     }
   };
+
+  const saving = saveTask.isPending;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">
-            {task ? "Editar tarea" : "Nueva tarea"}
+            {task?.id ? "Editar tarea" : "Nueva tarea"}
           </DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4 mt-2">
-          {/* Título */}
+          {error && (
+            <div className="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
+              {error}
+            </div>
+          )}
+
           <div className="space-y-2">
             <Label htmlFor="title">Título *</Label>
             <Input
               id="title"
               placeholder="Ej: Reel de productos nuevos"
               value={form.title}
-              onChange={(e) => setForm({ ...form, title: e.target.value })}
+              onChange={(event) =>
+                setForm({ ...form, title: event.target.value })
+              }
               required
             />
           </div>
 
-          {/* Descripción */}
           <div className="space-y-2">
             <Label htmlFor="description">Descripción</Label>
             <Textarea
               id="description"
               placeholder="Describe la tarea..."
               value={form.description}
-              onChange={(e) =>
-                setForm({ ...form, description: e.target.value })
+              onChange={(event) =>
+                setForm({ ...form, description: event.target.value })
               }
               rows={3}
             />
           </div>
 
-          {/* Plataforma + Estado */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Plataforma *</Label>
               <Select
                 value={form.platform}
-                onValueChange={(v) => setForm({ ...form, platform: v })}
+                onValueChange={(value) =>
+                  setForm({ ...form, platform: value })
+                }
               >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {platforms.map((p) => (
-                    <SelectItem key={p} value={p}>
-                      {p}
+                  {PLATFORM_OPTIONS.map((platform) => (
+                    <SelectItem key={platform} value={platform}>
+                      {platform}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -155,15 +143,15 @@ export default function TaskFormDialog({ open, onOpenChange, task, onSaved }) {
               <Label>Estado</Label>
               <Select
                 value={form.status}
-                onValueChange={(v) => setForm({ ...form, status: v })}
+                onValueChange={(value) => setForm({ ...form, status: value })}
               >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {statuses.map((s) => (
-                    <SelectItem key={s} value={s} className="capitalize">
-                      {s}
+                  {TASK_STATUS_OPTIONS.map((status) => (
+                    <SelectItem key={status.key} value={status.key}>
+                      {status.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -171,21 +159,22 @@ export default function TaskFormDialog({ open, onOpenChange, task, onSaved }) {
             </div>
           </div>
 
-          {/* Prioridad + Fecha */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Prioridad</Label>
               <Select
                 value={form.priority}
-                onValueChange={(v) => setForm({ ...form, priority: v })}
+                onValueChange={(value) =>
+                  setForm({ ...form, priority: value })
+                }
               >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {priorities.map((p) => (
-                    <SelectItem key={p} value={p} className="capitalize">
-                      {p}
+                  {TASK_PRIORITIES.map((priority) => (
+                    <SelectItem key={priority} value={priority}>
+                      {priority}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -198,28 +187,26 @@ export default function TaskFormDialog({ open, onOpenChange, task, onSaved }) {
                 id="due_date"
                 type="date"
                 value={form.due_date}
-                onChange={(e) =>
-                  setForm({ ...form, due_date: e.target.value })
+                onChange={(event) =>
+                  setForm({ ...form, due_date: event.target.value })
                 }
               />
             </div>
           </div>
 
-          {/* Botones */}
           <div className="flex justify-end gap-2 pt-2">
             <Button
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
+              disabled={saving}
             >
               Cancelar
             </Button>
 
-            <Button type="submit" disabled={saving || !form.title}>
-              {saving && (
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-              )}
-              {task ? "Guardar cambios" : "Crear tarea"}
+            <Button type="submit" disabled={saving || !form.title.trim()}>
+              {saving && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+              {task?.id ? "Guardar cambios" : "Crear tarea"}
             </Button>
           </div>
         </form>

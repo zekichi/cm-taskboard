@@ -1,7 +1,7 @@
 import { Outlet, Link, useLocation } from "react-router-dom";
 import { LayoutDashboard, List, Columns3, Plus } from "lucide-react";
 import { useState } from "react";
-import { cn } from "../lib/utils";
+import { cn } from "@/lib/utils";
 
 const navItems = [
   { to: "/", icon: LayoutDashboard, label: "Dashboard" },

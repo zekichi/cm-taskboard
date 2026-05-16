@@ -1,9 +1,18 @@
 import axios from "axios";
 
-// Cliente API propio para comunicar el frontend con el backend
 export const api = axios.create({
-  baseURL: "http://localhost:4000/api", // Cambiar si usás otro puerto
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:4000/api",
   headers: {
     "Content-Type": "application/json",
   },
+});
+
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("auth_token");
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
 });

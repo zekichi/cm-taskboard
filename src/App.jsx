@@ -1,39 +1,21 @@
-// App.jsx
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { queryClientInstance } from "./lib/query-client";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
-import Layout from "./components/Layout";
-import Dashboard from "./pages/Dashboard";
-import TaskBoard from "./pages/TaskBoard";
-import TaskList from "./pages/TaskList";
-import PageNotFound from "./lib/PageNotFound";
-import { Toaster } from "./components/ui/toaster";
-
-// Si querés mantener autenticación, dejalo.
-// Si no, lo sacamos después.
-import { AuthProvider, useAuth } from "./lib/AuthContext";
-import UserNotRegisteredError from "./components/UserNotRegisteredError";
+import Layout from "@/components/Layout";
+import LoadingState from "@/components/feedback/LoadingState";
+import { Toaster } from "@/components/ui/toaster";
+import { AuthProvider, useAuth } from "@/lib/AuthContext";
+import PageNotFound from "@/lib/PageNotFound";
+import { queryClientInstance } from "@/lib/query-client";
+import Dashboard from "@/pages/Dashboard";
+import TaskBoard from "@/pages/TaskBoard";
+import TaskList from "@/pages/TaskList";
 
 const AuthenticatedApp = () => {
-  const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
+  const { loading } = useAuth();
 
-  if (isLoadingPublicSettings || isLoadingAuth) {
-    return (
-      <div className="fixed inset-0 flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-gray-300 border-t-gray-800 rounded-full animate-spin"></div>
-      </div>
-    );
-  }
-
-  if (authError) {
-    if (authError.type === "user_not_registered") {
-      return <UserNotRegisteredError />;
-    }
-    if (authError.type === "auth_required") {
-      navigateToLogin();
-      return null;
-    }
+  if (loading) {
+    return <LoadingState label="Validando sesión..." />;
   }
 
   return (
