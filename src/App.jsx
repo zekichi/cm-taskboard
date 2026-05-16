@@ -8,14 +8,19 @@ import { AuthProvider, useAuth } from "@/lib/AuthContext";
 import PageNotFound from "@/lib/PageNotFound";
 import { queryClientInstance } from "@/lib/query-client";
 import Dashboard from "@/pages/Dashboard";
+import Login from "@/pages/Login";
 import TaskBoard from "@/pages/TaskBoard";
 import TaskList from "@/pages/TaskList";
 
 const AuthenticatedApp = () => {
-  const { loading } = useAuth();
+  const { loading, isAuthenticated } = useAuth();
 
   if (loading) {
     return <LoadingState label="Validando sesión..." />;
+  }
+
+  if (!isAuthenticated) {
+    return <Login />;
   }
 
   return (

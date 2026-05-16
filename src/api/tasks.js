@@ -7,24 +7,29 @@ export const taskKeys = {
   all: ["tasks"],
 };
 
+function extractData(response) {
+  return response?.data?.data;
+}
+
 export async function fetchTasks() {
   const response = await api.get("/tasks");
-  return Array.isArray(response.data) ? response.data : [];
+  const data = extractData(response);
+  return Array.isArray(data) ? data : [];
 }
 
 export async function createTask(payload) {
   const response = await api.post("/tasks", payload);
-  return response.data;
+  return extractData(response);
 }
 
 export async function updateTask(id, payload) {
   const response = await api.patch(`/tasks/${id}`, payload);
-  return response.data;
+  return extractData(response);
 }
 
 export async function deleteTask(id) {
-  await api.delete(`/tasks/${id}`);
-  return id;
+  const response = await api.delete(`/tasks/${id}`);
+  return extractData(response);
 }
 
 export function useTasks() {
@@ -44,8 +49,10 @@ export function useSaveTask() {
       queryClient.invalidateQueries({ queryKey: taskKeys.all });
       toast.success("Tarea guardada");
     },
-    onError: () => {
-      toast.error("No se pudo guardar la tarea");
+    onError: (error) => {
+      const message =
+        error?.response?.data?.error?.message || "No se pudo guardar la tarea";
+      toast.error(message);
     },
   });
 }
@@ -59,8 +66,11 @@ export function useUpdateTaskStatus() {
       queryClient.invalidateQueries({ queryKey: taskKeys.all });
       toast.success("Estado actualizado");
     },
-    onError: () => {
-      toast.error("No se pudo actualizar el estado");
+    onError: (error) => {
+      const message =
+        error?.response?.data?.error?.message ||
+        "No se pudo actualizar el estado";
+      toast.error(message);
     },
   });
 }
@@ -74,8 +84,10 @@ export function useDeleteTask() {
       queryClient.invalidateQueries({ queryKey: taskKeys.all });
       toast.success("Tarea eliminada");
     },
-    onError: () => {
-      toast.error("No se pudo eliminar la tarea");
+    onError: (error) => {
+      const message =
+        error?.response?.data?.error?.message || "No se pudo eliminar la tarea";
+      toast.error(message);
     },
   });
 }

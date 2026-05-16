@@ -61,15 +61,24 @@ export default function TaskFormDialog({ open, onOpenChange, task, onSaved }) {
     event.preventDefault();
     setError("");
 
+    const payload = {
+      ...form,
+      due_date: form.due_date ? form.due_date : null,
+      description: form.description ? form.description : null,
+    };
+
     try {
       await saveTask.mutateAsync({
         id: task?.id,
-        payload: form,
+        payload,
       });
       onSaved?.();
       onOpenChange(false);
-    } catch {
-      setError("No se pudo guardar la tarea. Revisa los datos e intenta otra vez.");
+    } catch (error) {
+      const message =
+        error?.response?.data?.error?.message ||
+        "No se pudo guardar la tarea. Revisa los datos e intenta otra vez.";
+      setError(message);
     }
   };
 

@@ -1,7 +1,8 @@
 import { Outlet, Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, List, Columns3, Plus } from "lucide-react";
+import { LayoutDashboard, List, Columns3, Plus, LogOut } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/lib/AuthContext";
 
 const navItems = [
   { to: "/", icon: LayoutDashboard, label: "Dashboard" },
@@ -11,6 +12,7 @@ const navItems = [
 
 export default function Layout() {
   const location = useLocation();
+  const { user, logout } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
@@ -54,14 +56,23 @@ export default function Layout() {
             })}
           </nav>
 
-          {/* New Task Button */}
-          <Link
-            to="/tasks?new=true"
-            className="hidden md:flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity shadow-sm"
-          >
-            <Plus className="h-4 w-4" />
-            Nueva tarea
-          </Link>
+          <div className="hidden md:flex items-center gap-2">
+            <Link
+              to="/tasks?new=true"
+              className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity shadow-sm"
+            >
+              <Plus className="h-4 w-4" />
+              Nueva tarea
+            </Link>
+            <button
+              type="button"
+              onClick={logout}
+              className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+            >
+              <LogOut className="h-4 w-4" />
+              {user?.email || "Salir"}
+            </button>
+          </div>
 
           {/* Mobile menu button */}
           <button
@@ -122,6 +133,17 @@ export default function Layout() {
               <Plus className="h-4 w-4" />
               Nueva tarea
             </Link>
+            <button
+              type="button"
+              onClick={() => {
+                logout();
+                setMobileOpen(false);
+              }}
+              className="flex w-full items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-muted-foreground hover:bg-secondary mt-1"
+            >
+              <LogOut className="h-4 w-4" />
+              Cerrar sesión
+            </button>
           </div>
         )}
       </header>

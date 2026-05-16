@@ -4,6 +4,10 @@ import { api } from "@/api/apiClient";
 
 const AuthContext = createContext();
 
+function getResponseData(response) {
+  return response?.data?.data;
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -20,8 +24,9 @@ export function AuthProvider({ children }) {
     api
       .get("/auth/me")
       .then((res) => {
-        setUser(res.data);
-        setIsAuthenticated(true);
+        const me = getResponseData(res);
+        setUser(me);
+        setIsAuthenticated(Boolean(me));
       })
       .catch(() => {
         localStorage.removeItem("auth_token");
@@ -33,8 +38,14 @@ export function AuthProvider({ children }) {
 
   const login = async (credentials) => {
     const res = await api.post("/auth/login", credentials);
-    localStorage.setItem("auth_token", res.data.token);
-    setUser(res.data.user);
+    const payload = getResponseData(res);
+
+    if (!payload?.token || !payload?.user) {
+      throw new Error("Respuesta de login inválida");
+    }
+
+    localStorage.setItem("auth_token", payload.token);
+    setUser(payload.user);
     setIsAuthenticated(true);
   };
 
