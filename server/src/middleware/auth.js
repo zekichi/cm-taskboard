@@ -17,14 +17,15 @@ export async function authMiddleware(req, _res, next) {
   try {
     payload = jwt.verify(token, env.JWT_SECRET);
   } catch (_error) {
-    return next(new AppError("Token inválido o expirado", 401, "UNAUTHORIZED"));
+    return next(new AppError("Token invalido o expirado", 401, "UNAUTHORIZED"));
   }
 
   const userId = Number(payload.sub);
   if (!Number.isInteger(userId) || userId <= 0) {
-    return next(new AppError("Token inválido o expirado", 401, "UNAUTHORIZED"));
+    return next(new AppError("Token invalido o expirado", 401, "UNAUTHORIZED"));
   }
 
+  // Revalidamos que el usuario siga existiendo aunque el JWT sea valido.
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: {

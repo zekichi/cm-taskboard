@@ -61,6 +61,7 @@ export default function TaskFormDialog({ open, onOpenChange, task, onSaved }) {
     event.preventDefault();
     setError("");
 
+    // El backend espera null (no string vacio) para campos opcionales.
     const payload = {
       ...form,
       due_date: form.due_date ? form.due_date : null,

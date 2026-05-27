@@ -8,6 +8,7 @@ export const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
+  // El token vive en localStorage para mantener sesion entre recargas.
   const token = localStorage.getItem("auth_token");
 
   if (token) {

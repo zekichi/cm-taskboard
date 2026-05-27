@@ -5,6 +5,7 @@ import { api } from "@/api/apiClient";
 const AuthContext = createContext();
 
 function getResponseData(response) {
+  // Unificamos acceso al payload porque toda la API responde { success, data }.
   return response?.data?.data;
 }
 
@@ -21,6 +22,7 @@ export function AuthProvider({ children }) {
       return;
     }
 
+    // Si hay token, validamos contra /auth/me para evitar sesiones "fantasma".
     api
       .get("/auth/me")
       .then((res) => {
@@ -41,7 +43,7 @@ export function AuthProvider({ children }) {
     const payload = getResponseData(res);
 
     if (!payload?.token || !payload?.user) {
-      throw new Error("Respuesta de login inválida");
+      throw new Error("Respuesta de login invalida");
     }
 
     localStorage.setItem("auth_token", payload.token);

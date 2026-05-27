@@ -8,6 +8,7 @@ export const taskKeys = {
 };
 
 function extractData(response) {
+  // Centralizar esto evita duplicar response?.data?.data en cada endpoint.
   return response?.data?.data;
 }
 
@@ -46,6 +47,7 @@ export function useSaveTask() {
     mutationFn: (task) =>
       task.id ? updateTask(task.id, task.payload) : createTask(task.payload),
     onSuccess: () => {
+      // Invalidar la lista completa mantiene board, dashboard y list sincronizados.
       queryClient.invalidateQueries({ queryKey: taskKeys.all });
       toast.success("Tarea guardada");
     },

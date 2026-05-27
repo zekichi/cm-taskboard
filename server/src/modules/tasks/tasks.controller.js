@@ -12,7 +12,7 @@ import {
 function parseTaskId(taskIdValue) {
   const taskId = Number(taskIdValue);
   if (!Number.isInteger(taskId) || taskId <= 0) {
-    throw new AppError("ID de tarea inválido", 400, "INVALID_TASK_ID");
+    throw new AppError("ID de tarea invalido", 400, "INVALID_TASK_ID");
   }
   return taskId;
 }
@@ -38,6 +38,7 @@ export async function updateTaskController(req, res) {
     throw new AppError("Tarea no encontrada", 404, "TASK_NOT_FOUND");
   }
 
+  // Devolvemos la tarea ya persistida para que el frontend no tenga que reconstruir estado.
   const updatedTask = await getTaskByUser(req.user.id, taskId);
   return sendSuccess(res, serializeTask(updatedTask));
 }

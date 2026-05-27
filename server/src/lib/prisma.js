@@ -10,5 +10,6 @@ export const prisma =
   });
 
 if (process.env.NODE_ENV !== "production") {
+  // En dev evitamos crear multiples conexiones al recargar nodemon.
   globalForPrisma.prisma = prisma;
 }

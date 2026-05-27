@@ -12,6 +12,7 @@ apiRouter.get("/health", (_req, res) => {
 });
 
 apiRouter.use("/auth", authRouter);
+// Protegemos todas las rutas de tareas bajo el mismo middleware.
 apiRouter.use("/tasks", asyncHandler(authMiddleware), tasksRouter);
 
 export default apiRouter;

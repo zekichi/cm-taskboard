@@ -16,6 +16,7 @@ tasksRouter.get("/", asyncHandler(getTasksController));
 tasksRouter.post("/", validateBody(createTaskSchema), asyncHandler(createTaskController));
 tasksRouter.patch(
   "/:id",
+  // PATCH parcial con validacion para no sobrescribir campos no enviados.
   validateBody(updateTaskSchema),
   asyncHandler(updateTaskController)
 );

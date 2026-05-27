@@ -18,16 +18,18 @@ function normalizeUser(user) {
 export async function loginWithEmailPassword({ email, password }) {
   const user = await prisma.user.findUnique({ where: { email } });
 
+  // Mismo mensaje para usuario/password incorrectos: evita filtrar cuentas validas.
   if (!user) {
-    throw new AppError("Credenciales inválidas", 401, "INVALID_CREDENTIALS");
+    throw new AppError("Credenciales invalidas", 401, "INVALID_CREDENTIALS");
   }
 
   const isMatch = await bcrypt.compare(password, user.passwordHash);
   if (!isMatch) {
-    throw new AppError("Credenciales inválidas", 401, "INVALID_CREDENTIALS");
+    throw new AppError("Credenciales invalidas", 401, "INVALID_CREDENTIALS");
   }
 
   const token = jwt.sign({ email: user.email }, env.JWT_SECRET, {
+    // Guardamos el id en "sub" para respetar el uso estandar de JWT.
     subject: String(user.id),
     expiresIn: env.JWT_EXPIRES_IN,
   });

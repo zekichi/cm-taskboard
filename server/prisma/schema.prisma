@@ -25,6 +25,7 @@ model Task {
   description String?
   platform    String
   status      String
+  // Guardamos DateTime para compatibilidad con SQLite y futura migracion a Postgres.
   dueDate     DateTime? @map("due_date")
   priority    String
   userId      Int       @map("user_id")

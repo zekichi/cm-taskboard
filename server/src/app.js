@@ -18,6 +18,7 @@ app.use(
 );
 app.use(express.json({ limit: "1mb" }));
 
+// El router de API va primero; not-found y error-handler cierran el pipeline.
 app.use("/api", apiRouter);
 app.use(notFoundHandler);
 app.use(errorHandler);

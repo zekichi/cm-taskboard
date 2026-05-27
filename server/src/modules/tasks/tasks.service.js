@@ -23,6 +23,7 @@ export async function createTaskForUser(userId, payload) {
 }
 
 export async function updateTaskForUser(userId, taskId, payload) {
+  // updateMany permite combinar id+userId y devolver count para distinguir 404 real.
   return prisma.task.updateMany({
     where: {
       id: taskId,
@@ -53,6 +54,7 @@ export async function getTaskByUser(userId, taskId) {
 }
 
 export async function deleteTaskForUser(userId, taskId) {
+  // Mismo enfoque que update: count=0 significa "no existe o no pertenece al usuario".
   return prisma.task.deleteMany({
     where: {
       id: taskId,

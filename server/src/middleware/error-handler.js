@@ -7,13 +7,14 @@ export function errorHandler(error, _req, res, _next) {
   const code = isAppError ? error.code : "INTERNAL_ERROR";
   const message = isAppError
     ? error.message
-    : "Ocurrió un error interno inesperado";
+    : "Ocurrio un error interno inesperado";
   const details = isAppError ? error.details : null;
 
   if (!isAppError) {
     console.error(error);
   }
 
+  // Toda salida de error mantiene el mismo contrato JSON para el frontend.
   return sendError(
     res,
     {

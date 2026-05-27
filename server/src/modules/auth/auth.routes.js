@@ -9,6 +9,7 @@ import { loginSchema } from "./auth.schemas.js";
 const authRouter = Router();
 
 authRouter.post("/login", validateBody(loginSchema), asyncHandler(loginController));
+// /me siempre depende de token vigente en Authorization.
 authRouter.get("/me", asyncHandler(authMiddleware), asyncHandler(meController));
 
 export default authRouter;

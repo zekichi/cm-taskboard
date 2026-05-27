@@ -1,6 +1,7 @@
 import { toDateOnlyString } from "./date.js";
 
 export function serializeTask(task) {
+  // Convertimos naming interno (dueDate) al contrato publico (due_date).
   return {
     id: task.id,
     title: task.title,
