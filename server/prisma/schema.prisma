@@ -36,3 +36,7 @@ model Task {
   @@index([userId])
   @@map("tasks")
 }
+
+// continuamos con la tabla de empresa
+
+// Deploy online, junto con QR para el ingreso a la app y QR para el informe en español y en ingles.
