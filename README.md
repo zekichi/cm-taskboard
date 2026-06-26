@@ -6,6 +6,20 @@ CM Taskboard es una app React/Vite con API Node/Express, JWT y Prisma. Está pre
 - Backend: Render
 - Base de datos: Neon PostgreSQL
 
+Repositorio GitHub:
+
+```text
+https://github.com/zekichi/cm-taskboard
+```
+
+URLs de producción:
+
+```text
+Frontend Vercel: pendiente de crear en Vercel
+Backend Render: pendiente de crear en Render
+Health backend: <URL_RENDER>/api/health
+```
+
 ## Variables de entorno
 
 Usar `.env.example` para desarrollo y `.env.production.example` para producción.
