@@ -8,35 +8,100 @@ datasource db {
 }
 
 model User {
-  id           Int      @id @default(autoincrement())
-  email        String   @unique
-  passwordHash String   @map("password_hash")
-  name         String?
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
-  tasks        Task[]
+  id                      Int                  @id @default(autoincrement())
+  email                   String               @unique
+  passwordHash            String               @map("password_hash")
+  name                    String?
+  createdAt               DateTime             @default(now()) @map("created_at")
+  updatedAt               DateTime             @updatedAt @map("updated_at")
+  organizationMemberships OrganizationMember[]
+  teamMemberships         TeamMember[]
+  createdTasks            Task[]               @relation("TaskCreator")
+  assignedTasks           Task[]               @relation("TaskAssignee")
 
   @@map("users")
 }
 
-model Task {
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String?
-  platform    String
-  status      String
-  // Guardamos DateTime para compatibilidad con SQLite y futura migracion a Postgres.
-  dueDate     DateTime? @map("due_date")
-  priority    String
-  userId      Int       @map("user_id")
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+model Organization {
+  id        Int                  @id @default(autoincrement())
+  name      String
+  createdAt DateTime             @default(now()) @map("created_at")
+  updatedAt DateTime             @updatedAt @map("updated_at")
+  members   OrganizationMember[]
+  teams     Team[]
+  tasks     Task[]
 
+  @@map("organizations")
+}
+
+model OrganizationMember {
+  id             Int          @id @default(autoincrement())
+  organizationId Int          @map("organization_id")
+  userId         Int          @map("user_id")
+  role           String
+  specialty      String?
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId])
+  @@index([userId])
+  @@map("organization_members")
+}
+
+model Team {
+  id             Int          @id @default(autoincrement())
+  name           String
+  organizationId Int          @map("organization_id")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  members        TeamMember[]
+  tasks          Task[]
+
+  @@index([organizationId])
+  @@map("teams")
+}
+
+model TeamMember {
+  id        Int      @id @default(autoincrement())
+  teamId    Int      @map("team_id")
+  userId    Int      @map("user_id")
+  role      String
+  specialty String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, userId])
+  @@index([userId])
+  @@map("team_members")
+}
+
+model Task {
+  id             Int           @id @default(autoincrement())
+  title          String
+  description    String?
+  platform       String
+  status         String
+  dueDate        DateTime?     @map("due_date")
+  priority       String
+  organizationId Int           @map("organization_id")
+  teamId         Int?          @map("team_id")
+  userId         Int           @map("user_id")
+  assignedToId   Int?          @map("assigned_to_id")
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  team           Team?         @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  createdBy      User          @relation("TaskCreator", fields: [userId], references: [id], onDelete: Cascade)
+  assignedTo     User?         @relation("TaskAssignee", fields: [assignedToId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId])
+  @@index([teamId])
+  @@index([assignedToId])
   @@index([userId])
   @@map("tasks")
 }
-
-// continuamos con la tabla de empresa
-
-// Deploy online, junto con QR para el ingreso a la app y QR para el informe en español y en ingles.
