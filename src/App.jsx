@@ -7,8 +7,10 @@ import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider, useAuth } from "@/lib/AuthContext";
 import PageNotFound from "@/lib/PageNotFound";
 import { queryClientInstance } from "@/lib/query-client";
+import { WorkspaceProvider } from "@/lib/WorkspaceContext";
 import Dashboard from "@/pages/Dashboard";
 import Login from "@/pages/Login";
+import Workspace from "@/pages/Workspace";
 import TaskBoard from "@/pages/TaskBoard";
 import TaskList from "@/pages/TaskList";
 
@@ -24,14 +26,17 @@ const AuthenticatedApp = () => {
   }
 
   return (
-    <Routes>
-      <Route element={<Layout />}>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/board" element={<TaskBoard />} />
-        <Route path="/tasks" element={<TaskList />} />
-        <Route path="*" element={<PageNotFound />} />
-      </Route>
-    </Routes>
+    <WorkspaceProvider>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/board" element={<TaskBoard />} />
+          <Route path="/tasks" element={<TaskList />} />
+          <Route path="/workspace" element={<Workspace />} />
+          <Route path="*" element={<PageNotFound />} />
+        </Route>
+      </Routes>
+    </WorkspaceProvider>
   );
 };
 

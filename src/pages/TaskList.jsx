@@ -13,16 +13,28 @@ import {
   ALL_PLATFORMS_FILTER,
   ALL_STATUSES_FILTER,
 } from "@/constants/task-options";
+import { useWorkspace } from "@/lib/WorkspaceContext";
+
+const ALL_ASSIGNEES = "Todos";
 
 export default function TaskList() {
-  const { data: tasks = [], isLoading, isError, refetch } = useTasks();
+  const { organizationId, teamId, members } = useWorkspace();
   const [formOpen, setFormOpen] = useState(false);
   const [editTask, setEditTask] = useState(null);
   const [filters, setFilters] = useState({
     search: "",
     platform: ALL_PLATFORMS_FILTER,
     status: ALL_STATUSES_FILTER,
+    assignedToId: ALL_ASSIGNEES,
   });
+
+  const apiFilters = {
+    organizationId,
+    teamId,
+    assignedToId:
+      filters.assignedToId === ALL_ASSIGNEES ? "" : filters.assignedToId,
+  };
+  const { data: tasks = [], isLoading, isError, refetch } = useTasks(apiFilters);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -99,7 +111,7 @@ export default function TaskList() {
         </Button>
       </div>
 
-      <FilterBar filters={filters} onFilterChange={setFilters} />
+      <FilterBar filters={filters} onFilterChange={setFilters} members={members} />
 
       {filteredTasks.length > 0 ? (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">

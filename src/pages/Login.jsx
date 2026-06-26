@@ -9,8 +9,8 @@ import { useAuth } from "@/lib/AuthContext";
 
 export default function Login() {
   const { login } = useAuth();
-  const [email, setEmail] = useState("demo@cmtaskboard.local");
-  const [password, setPassword] = useState("Demo1234!");
+  const [email, setEmail] = useState("valentina.rios@cts-demo.local");
+  const [password, setPassword] = useState("CtsDemo2026!");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const onSubmit = async (event) => {

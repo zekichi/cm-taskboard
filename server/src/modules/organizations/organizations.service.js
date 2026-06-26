@@ -69,7 +69,11 @@ export async function addOrganizationMember(actorUserId, organizationId, payload
   });
 
   if (existing) {
-    throw new AppError("El usuario ya pertenece a la organización", 409, "ORG_MEMBER_EXISTS");
+    throw new AppError(
+      "El usuario ya pertenece a la organización",
+      409,
+      "ORG_MEMBER_EXISTS"
+    );
   }
 
   const member = await prisma.organizationMember.create({

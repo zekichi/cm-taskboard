@@ -1,4 +1,5 @@
 import { sendSuccess } from "../../lib/http.js";
+import { AppError } from "../../lib/errors.js";
 import {
   serializeOrganization,
   serializeOrganizationMember,
@@ -15,9 +16,7 @@ import {
 function parseId(value, name) {
   const id = Number(value);
   if (!Number.isInteger(id) || id <= 0) {
-    const error = new Error(`${name} inválido`);
-    error.status = 400;
-    throw error;
+    throw new AppError(`${name} inválido`, 400, "INVALID_ID");
   }
   return id;
 }

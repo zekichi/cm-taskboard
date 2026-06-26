@@ -5,15 +5,21 @@ import { api } from "@/api/apiClient";
 
 export const taskKeys = {
   all: ["tasks"],
+  list: (filters) => ["tasks", filters],
 };
 
 function extractData(response) {
-  // Centralizar esto evita duplicar response?.data?.data en cada endpoint.
   return response?.data?.data;
 }
 
-export async function fetchTasks() {
-  const response = await api.get("/tasks");
+function cleanParams(params) {
+  return Object.fromEntries(
+    Object.entries(params || {}).filter(([, value]) => value !== null && value !== undefined && value !== "")
+  );
+}
+
+export async function fetchTasks(filters = {}) {
+  const response = await api.get("/tasks", { params: cleanParams(filters) });
   const data = extractData(response);
   return Array.isArray(data) ? data : [];
 }
@@ -33,10 +39,10 @@ export async function deleteTask(id) {
   return extractData(response);
 }
 
-export function useTasks() {
+export function useTasks(filters = {}) {
   return useQuery({
-    queryKey: taskKeys.all,
-    queryFn: fetchTasks,
+    queryKey: taskKeys.list(filters),
+    queryFn: () => fetchTasks(filters),
   });
 }
 
@@ -47,7 +53,6 @@ export function useSaveTask() {
     mutationFn: (task) =>
       task.id ? updateTask(task.id, task.payload) : createTask(task.payload),
     onSuccess: () => {
-      // Invalidar la lista completa mantiene board, dashboard y list sincronizados.
       queryClient.invalidateQueries({ queryKey: taskKeys.all });
       toast.success("Tarea guardada");
     },

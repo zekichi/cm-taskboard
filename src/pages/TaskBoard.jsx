@@ -9,10 +9,15 @@ import TaskCard from "@/components/taskboard/TaskCard";
 import TaskFormDialog from "@/components/taskboard/TaskFormDialog";
 import { Button } from "@/components/ui/button";
 import { TASK_STATUS, TASK_STATUS_OPTIONS } from "@/constants/task-options";
+import { useWorkspace } from "@/lib/WorkspaceContext";
 import { cn } from "@/lib/utils";
 
 export default function TaskBoard() {
-  const { data: tasks = [], isLoading, isError, refetch } = useTasks();
+  const { organizationId, teamId } = useWorkspace();
+  const { data: tasks = [], isLoading, isError, refetch } = useTasks({
+    organizationId,
+    teamId,
+  });
   const [formOpen, setFormOpen] = useState(false);
   const [editTask, setEditTask] = useState(null);
   const [defaultStatus, setDefaultStatus] = useState(TASK_STATUS.PENDING);
@@ -44,7 +49,7 @@ export default function TaskBoard() {
           Tablero
         </h1>
         <p className="text-muted-foreground mt-1">
-          Vista kanban de todas tus tareas
+          Vista kanban de las tareas del equipo seleccionado
         </p>
       </div>
 

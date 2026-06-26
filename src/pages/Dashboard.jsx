@@ -12,19 +12,21 @@ import StatsCards from "@/components/taskboard/StatsCards";
 import TaskCard from "@/components/taskboard/TaskCard";
 import TaskFormDialog from "@/components/taskboard/TaskFormDialog";
 import { TASK_STATUS } from "@/constants/task-options";
+import { useWorkspace } from "@/lib/WorkspaceContext";
 
 export default function Dashboard() {
-  const { data: tasks = [], isLoading, isError, refetch } = useTasks();
+  const { organizationId, teamId, selectedOrganization } = useWorkspace();
+  const { data: tasks = [], isLoading, isError, refetch } = useTasks({
+    organizationId,
+    teamId,
+  });
   const [editTask, setEditTask] = useState(null);
   const [formOpen, setFormOpen] = useState(false);
 
   const upcomingTasks = useMemo(
     () =>
       tasks
-        .filter(
-          (task) =>
-            task.due_date && task.status !== TASK_STATUS.PUBLISHED
-        )
+        .filter((task) => task.due_date && task.status !== TASK_STATUS.PUBLISHED)
         .sort((a, b) => new Date(a.due_date) - new Date(b.due_date))
         .slice(0, 5),
     [tasks]
@@ -65,9 +67,9 @@ export default function Dashboard() {
           Dashboard
         </h1>
         <p className="text-muted-foreground mt-1">
-          {format(new Date(), "EEEE, d 'de' MMMM", { locale: es })}
-          {" · "}
-          {tasks.length} tareas en total
+          {selectedOrganization?.name || "Organización"} ·{" "}
+          {format(new Date(), "EEEE, d 'de' MMMM", { locale: es })} ·{" "}
+          {tasks.length} tareas
         </p>
       </div>
 
@@ -157,7 +159,8 @@ export default function Dashboard() {
                       {task.title}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {task.platform} · {task.status}
+                      {task.team?.name || "Sin equipo"} ·{" "}
+                      {task.assignedTo?.name || "Sin responsable"}
                     </p>
                   </div>
                   <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">

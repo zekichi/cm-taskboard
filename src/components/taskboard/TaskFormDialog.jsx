@@ -25,6 +25,9 @@ import {
   TASK_STATUS,
   TASK_STATUS_OPTIONS,
 } from "@/constants/task-options";
+import { useWorkspace } from "@/lib/WorkspaceContext";
+
+const UNASSIGNED_VALUE = "__unassigned";
 
 const initialForm = {
   title: "",
@@ -33,10 +36,14 @@ const initialForm = {
   status: TASK_STATUS.PENDING,
   due_date: "",
   priority: "media",
+  organizationId: "",
+  teamId: "",
+  assignedToId: "",
 };
 
 export default function TaskFormDialog({ open, onOpenChange, task, onSaved }) {
   const saveTask = useSaveTask();
+  const { organizationId, teamId, teams, members } = useWorkspace();
   const [form, setForm] = useState(initialForm);
   const [error, setError] = useState("");
 
@@ -49,21 +56,30 @@ export default function TaskFormDialog({ open, onOpenChange, task, onSaved }) {
         status: task.status || initialForm.status,
         due_date: task.due_date || "",
         priority: task.priority || initialForm.priority,
+        organizationId: String(task.organizationId || organizationId || ""),
+        teamId: task.teamId ? String(task.teamId) : teamId || "",
+        assignedToId: task.assignedToId ? String(task.assignedToId) : "",
       });
     } else {
-      setForm(initialForm);
+      setForm({
+        ...initialForm,
+        organizationId: organizationId || "",
+        teamId: teamId || "",
+      });
     }
 
     setError("");
-  }, [task, open]);
+  }, [task, open, organizationId, teamId]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError("");
 
-    // El backend espera null (no string vacio) para campos opcionales.
     const payload = {
       ...form,
+      organizationId: Number(form.organizationId),
+      teamId: form.teamId ? Number(form.teamId) : null,
+      assignedToId: form.assignedToId ? Number(form.assignedToId) : null,
       due_date: form.due_date ? form.due_date : null,
       description: form.description ? form.description : null,
     };
@@ -87,7 +103,7 @@ export default function TaskFormDialog({ open, onOpenChange, task, onSaved }) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-xl">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">
             {task?.id ? "Editar tarea" : "Nueva tarea"}
@@ -125,6 +141,58 @@ export default function TaskFormDialog({ open, onOpenChange, task, onSaved }) {
               }
               rows={3}
             />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Equipo</Label>
+              <Select
+                value={form.teamId || UNASSIGNED_VALUE}
+                onValueChange={(value) =>
+                  setForm({
+                    ...form,
+                    teamId: value === UNASSIGNED_VALUE ? "" : value,
+                  })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={UNASSIGNED_VALUE}>Sin equipo</SelectItem>
+                  {teams.map((team) => (
+                    <SelectItem key={team.id} value={String(team.id)}>
+                      {team.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Responsable</Label>
+              <Select
+                value={form.assignedToId || UNASSIGNED_VALUE}
+                onValueChange={(value) =>
+                  setForm({
+                    ...form,
+                    assignedToId: value === UNASSIGNED_VALUE ? "" : value,
+                  })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={UNASSIGNED_VALUE}>Sin asignar</SelectItem>
+                  {members.map((member) => (
+                    <SelectItem key={member.userId} value={String(member.userId)}>
+                      {member.user?.name || member.user?.email} · {member.specialty || member.role}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -214,7 +282,7 @@ export default function TaskFormDialog({ open, onOpenChange, task, onSaved }) {
               Cancelar
             </Button>
 
-            <Button type="submit" disabled={saving || !form.title.trim()}>
+            <Button type="submit" disabled={saving || !form.title.trim() || !form.organizationId}>
               {saving && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
               {task?.id ? "Guardar cambios" : "Crear tarea"}
             </Button>

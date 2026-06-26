@@ -20,18 +20,19 @@ export const createTaskSchema = z.object({
   description: z.string().trim().max(1500).optional().nullable(),
   platform: z.enum(platformValues),
   status: z.enum(statusValues),
-  // El frontend usa input type=date, por eso validamos YYYY-MM-DD de forma explicita.
   due_date: z
     .string()
     .regex(dateRegex, "Formato de fecha invalido (YYYY-MM-DD)")
     .optional()
     .nullable(),
   priority: z.enum(priorityValues),
+  organizationId: z.coerce.number().int().positive(),
+  teamId: z.coerce.number().int().positive().optional().nullable(),
+  assignedToId: z.coerce.number().int().positive().optional().nullable(),
 });
 
 export const updateTaskSchema = createTaskSchema
   .partial()
-  // Evita PATCH vacios que no cambian nada pero rompen trazabilidad.
   .refine((value) => Object.keys(value).length > 0, {
     message: "Debes enviar al menos un campo para actualizar",
   });

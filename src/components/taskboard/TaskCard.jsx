@@ -101,6 +101,16 @@ export default function TaskCard({ task, onEdit, compact = false }) {
           <StatusBadge status={task.status} />
         </div>
 
+        <div className="mb-3 space-y-1 text-xs text-muted-foreground">
+          {task.team && <p>Equipo: {task.team.name}</p>}
+          {task.assignedTo && (
+            <p>Responsable: {task.assignedTo.name || task.assignedTo.email}</p>
+          )}
+          {task.createdBy && (
+            <p>Creada por: {task.createdBy.name || task.createdBy.email}</p>
+          )}
+        </div>
+
         <div className="flex items-center justify-between gap-3">
           {task.due_date ? (
             <span

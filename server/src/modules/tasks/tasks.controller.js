@@ -4,7 +4,6 @@ import { serializeTask } from "../../lib/task-serializer.js";
 import {
   createTaskForUser,
   deleteTaskForUser,
-  getTaskByUser,
   listTasksByUser,
   updateTaskForUser,
 } from "./tasks.service.js";
@@ -17,8 +16,24 @@ function parseTaskId(taskIdValue) {
   return taskId;
 }
 
+function parseOptionalId(value) {
+  if (!value) {
+    return null;
+  }
+
+  const id = Number(value);
+  if (!Number.isInteger(id) || id <= 0) {
+    throw new AppError("Filtro invalido", 400, "INVALID_FILTER");
+  }
+  return id;
+}
+
 export async function getTasksController(req, res) {
-  const tasks = await listTasksByUser(req.user.id);
+  const tasks = await listTasksByUser(req.user.id, {
+    organizationId: parseOptionalId(req.query.organizationId),
+    teamId: parseOptionalId(req.query.teamId),
+    assignedToId: parseOptionalId(req.query.assignedToId),
+  });
   return sendSuccess(
     res,
     tasks.map(serializeTask)
@@ -32,24 +47,12 @@ export async function createTaskController(req, res) {
 
 export async function updateTaskController(req, res) {
   const taskId = parseTaskId(req.params.id);
-  const result = await updateTaskForUser(req.user.id, taskId, req.validatedBody);
-
-  if (result.count === 0) {
-    throw new AppError("Tarea no encontrada", 404, "TASK_NOT_FOUND");
-  }
-
-  // Devolvemos la tarea ya persistida para que el frontend no tenga que reconstruir estado.
-  const updatedTask = await getTaskByUser(req.user.id, taskId);
-  return sendSuccess(res, serializeTask(updatedTask));
+  const task = await updateTaskForUser(req.user.id, taskId, req.validatedBody);
+  return sendSuccess(res, serializeTask(task));
 }
 
 export async function deleteTaskController(req, res) {
   const taskId = parseTaskId(req.params.id);
   const result = await deleteTaskForUser(req.user.id, taskId);
-
-  if (result.count === 0) {
-    throw new AppError("Tarea no encontrada", 404, "TASK_NOT_FOUND");
-  }
-
-  return sendSuccess(res, { id: taskId });
+  return sendSuccess(res, result);
 }

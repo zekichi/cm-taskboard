@@ -18,6 +18,7 @@
     "prisma:migrate": "prisma migrate dev --schema server/prisma/schema.prisma",
     "prisma:deploy": "prisma migrate deploy --schema server/prisma/schema.prisma",
     "prisma:seed": "node server/prisma/seed.js",
+    "seed:prod": "node server/prisma/seed.js",
     "db:setup": "npm run prisma:migrate -- --name init && npm run prisma:seed"
   },
   "dependencies": {

@@ -4,60 +4,59 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+const demoPassword = "CtsDemo2026!";
+
 const users = [
   {
-    email: "demo@cmtaskboard.local",
-    password: "Demo1234!",
-    name: "Usuario Demo",
+    email: "valentina.rios@cts-demo.local",
+    password: demoPassword,
+    name: "Valentina Ríos",
     role: "OWNER",
     specialty: "Social Media Manager",
   },
   {
-    email: "copy@cmtaskboard.local",
-    password: "Demo1234!",
-    name: "Copy Demo",
-    role: "MANAGER",
-    specialty: "Copywriter",
+    email: "mateo.silva@cts-demo.local",
+    password: demoPassword,
+    name: "Mateo Silva",
+    role: "ADMIN",
+    specialty: "Diseñador",
   },
   {
-    email: "design@cmtaskboard.local",
-    password: "Demo1234!",
-    name: "Diseño Demo",
-    role: "MEMBER",
-    specialty: "Diseñador",
+    email: "lara.gomez@cts-demo.local",
+    password: demoPassword,
+    name: "Lara Gómez",
+    role: "ADMIN",
+    specialty: "Copywriter",
   },
 ];
 
 const taskSeeds = [
   {
-    title: "Planificar calendario de contenidos",
-    description: "Definir temas y fechas para la próxima semana.",
+    title: "Calendario editorial CTS",
+    description: "Armar el calendario semanal con piezas, copies y responsables.",
     platform: "Instagram",
     status: "pendiente",
-    dueDate: "2026-05-20",
+    dueDate: "2026-07-03",
     priority: "alta",
-    teamName: "Contenido orgánico",
-    assignedEmail: "copy@cmtaskboard.local",
+    assignedEmail: "valentina.rios@cts-demo.local",
   },
   {
-    title: "Diseñar carrusel del lanzamiento",
-    description: "Preparar piezas y copy para aprobación.",
+    title: "Diseño de carrusel institucional",
+    description: "Preparar una propuesta visual para la campaña CTS.",
     platform: "LinkedIn",
     status: "en diseño",
-    dueDate: "2026-05-22",
+    dueDate: "2026-07-05",
     priority: "media",
-    teamName: "Contenido orgánico",
-    assignedEmail: "design@cmtaskboard.local",
+    assignedEmail: "mateo.silva@cts-demo.local",
   },
   {
-    title: "Programar video corto",
-    description: "Dejar publicación lista para el viernes.",
-    platform: "TikTok",
+    title: "Copy para lanzamiento de servicio",
+    description: "Redactar versiones cortas para stories y feed.",
+    platform: "Instagram",
     status: "aprobado",
-    dueDate: "2026-05-23",
-    priority: "baja",
-    teamName: "Campañas pagas",
-    assignedEmail: "demo@cmtaskboard.local",
+    dueDate: "2026-07-06",
+    priority: "media",
+    assignedEmail: "lara.gomez@cts-demo.local",
   },
 ];
 
@@ -87,8 +86,8 @@ async function main() {
 
   const organization = await prisma.organization.upsert({
     where: { id: 1 },
-    update: { name: "CM Studio" },
-    create: { name: "CM Studio" },
+    update: { name: "CTS" },
+    create: { name: "CTS" },
   });
 
   await prisma.task.deleteMany({ where: { organizationId: organization.id } });
@@ -111,35 +110,25 @@ async function main() {
     });
   }
 
-  const teamSeeds = [
-    { name: "Contenido orgánico", roleByEmail: users },
-    { name: "Campañas pagas", roleByEmail: users.slice(0, 2) },
-  ];
+  const team = await prisma.team.create({
+    data: {
+      name: "CTS",
+      organizationId: organization.id,
+    },
+  });
 
-  const teams = new Map();
-  for (const teamSeed of teamSeeds) {
-    const team = await prisma.team.create({
+  for (const user of createdUsers.values()) {
+    await prisma.teamMember.create({
       data: {
-        name: teamSeed.name,
-        organizationId: organization.id,
+        teamId: team.id,
+        userId: user.id,
+        role: user.seed.role,
+        specialty: user.seed.specialty,
       },
     });
-    teams.set(team.name, team);
-
-    for (const memberSeed of teamSeed.roleByEmail) {
-      const user = createdUsers.get(memberSeed.email);
-      await prisma.teamMember.create({
-        data: {
-          teamId: team.id,
-          userId: user.id,
-          role: memberSeed.role,
-          specialty: memberSeed.specialty,
-        },
-      });
-    }
   }
 
-  const creator = createdUsers.get("demo@cmtaskboard.local");
+  const creator = createdUsers.get("valentina.rios@cts-demo.local");
   await prisma.task.createMany({
     data: taskSeeds.map((task) => ({
       title: task.title,
@@ -149,16 +138,16 @@ async function main() {
       dueDate: toDateOnly(task.dueDate),
       priority: task.priority,
       organizationId: organization.id,
-      teamId: teams.get(task.teamName).id,
+      teamId: team.id,
       userId: creator.id,
       assignedToId: createdUsers.get(task.assignedEmail).id,
     })),
   });
 
   console.log("Seed completado.");
-  console.log("Organizacion demo: CM Studio");
-  console.log("Usuario demo: demo@cmtaskboard.local");
-  console.log("Password demo: Demo1234!");
+  console.log("Organizacion demo: CTS");
+  console.log("Equipo demo: CTS");
+  console.log(`Password demo para los 3 usuarios: ${demoPassword}`);
 }
 
 main()

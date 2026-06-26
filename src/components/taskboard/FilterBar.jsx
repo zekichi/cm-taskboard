@@ -16,28 +16,31 @@ import {
   TASK_STATUS_OPTIONS,
 } from "@/constants/task-options";
 
+const ALL_ASSIGNEES = "Todos";
 const platformFilters = [ALL_PLATFORMS_FILTER, ...PLATFORM_OPTIONS];
 const statusFilters = [
   { key: ALL_STATUSES_FILTER, label: ALL_STATUSES_FILTER },
   ...TASK_STATUS_OPTIONS,
 ];
 
-export default function FilterBar({ filters, onFilterChange }) {
+export default function FilterBar({ filters, onFilterChange, members = [] }) {
   const hasFilters =
     filters.search ||
     filters.platform !== ALL_PLATFORMS_FILTER ||
-    filters.status !== ALL_STATUSES_FILTER;
+    filters.status !== ALL_STATUSES_FILTER ||
+    filters.assignedToId !== ALL_ASSIGNEES;
 
   const clearFilters = () => {
     onFilterChange({
       search: "",
       platform: ALL_PLATFORMS_FILTER,
       status: ALL_STATUSES_FILTER,
+      assignedToId: ALL_ASSIGNEES,
     });
   };
 
   return (
-    <div className="flex flex-col sm:flex-row gap-3">
+    <div className="flex flex-col lg:flex-row gap-3">
       <div className="relative flex-1">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
@@ -50,7 +53,7 @@ export default function FilterBar({ filters, onFilterChange }) {
         />
       </div>
 
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         <Select
           value={filters.platform}
           onValueChange={(value) =>
@@ -82,6 +85,25 @@ export default function FilterBar({ filters, onFilterChange }) {
             {statusFilters.map((status) => (
               <SelectItem key={status.key} value={status.key}>
                 {status.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Select
+          value={filters.assignedToId}
+          onValueChange={(value) =>
+            onFilterChange({ ...filters, assignedToId: value })
+          }
+        >
+          <SelectTrigger className="w-[170px]">
+            <SelectValue placeholder="Responsable" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={ALL_ASSIGNEES}>Responsables</SelectItem>
+            {members.map((member) => (
+              <SelectItem key={member.userId} value={String(member.userId)}>
+                {member.user?.name || member.user?.email}
               </SelectItem>
             ))}
           </SelectContent>
