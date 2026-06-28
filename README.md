@@ -20,46 +20,46 @@ Backend Render: pendiente de crear en Render
 Health backend: <URL_RENDER>/api/health
 ```
 
-## Variables de entorno
-
-Usar `.env.example` para desarrollo y `.env.production.example` para producción.
+## Variables De Entorno
 
 Backend Render:
 
-- `DATABASE_URL`: URL PostgreSQL de Neon, con `sslmode=require`
-- `JWT_SECRET`: secreto largo y privado
-- `JWT_EXPIRES_IN`: por ejemplo `7d`
-- `CORS_ORIGIN`: URL exacta del frontend en Vercel, por ejemplo `https://cm-taskboard.vercel.app`
-- `PORT`: Render lo inyecta, pero el proyecto acepta `4000`
-- `NODE_ENV`: `production`
+- `DATABASE_URL`: URL PostgreSQL real de Neon, con `sslmode=require`.
+- `JWT_SECRET`: secreto largo, privado y distinto de `change-me-in-production`.
+- `JWT_EXPIRES_IN`: `7d`.
+- `CORS_ORIGIN`: temporalmente `http://localhost:5173`; luego la URL exacta de Vercel.
+- `NODE_ENV`: `production`.
+- `PORT`: Render lo inyecta, el proyecto acepta `4000`.
 
 Frontend Vercel:
 
-- `VITE_API_URL`: URL exacta del backend Render con `/api`, por ejemplo `https://cm-taskboard-api.onrender.com/api`
+- `VITE_API_URL`: URL pública del backend Render con `/api`, por ejemplo `https://cm-taskboard.onrender.com/api`.
 
 ## Desarrollo
 
 1. `npm install`
 2. Configurar `.env` con una base PostgreSQL de Neon.
 3. `npm run prisma:deploy`
-4. `npm run prisma:seed`
+4. `npm run seed:prod`
 5. `npm run dev`
 
-## Deploy En Neon
+## Neon
 
-1. Crear un proyecto gratuito en Neon.
-2. Copiar la connection string pooled o directa.
-3. Asegurarse de que termine con `?sslmode=require`.
-4. Usarla como `DATABASE_URL` en Render y localmente cuando se quiera migrar/seedear producción.
+1. Entrar al proyecto Neon.
+2. Abrir `Connect`.
+3. Usar branch `main`, database `neondb` y role `neondb_owner`.
+4. Para migraciones Prisma, usar la conexión directa, sin `-pooler`.
+5. Confirmar que la URL tenga `sslmode=require`.
+6. Pegar esa URL como `DATABASE_URL` local y en Render.
 
-## Deploy En Render
+## Render
 
 Crear un Web Service apuntando a este repo.
 
 Build command:
 
 ```bash
-npm install && npm run prisma:generate
+npm ci && npm run prisma:generate
 ```
 
 Start command:
@@ -68,13 +68,15 @@ Start command:
 npm run start:prod
 ```
 
-Luego ejecutar el seed desde Render Shell o local con la `DATABASE_URL` de Neon:
+El start command ejecuta migraciones con `prisma migrate deploy` antes de iniciar la API.
+
+Para cargar o recargar el demo CTS:
 
 ```bash
 npm run seed:prod
 ```
 
-## Deploy En Vercel
+## Vercel
 
 Crear proyecto Vercel desde este repo.
 
@@ -90,9 +92,17 @@ Output directory:
 dist
 ```
 
-Configurar `VITE_API_URL` con la URL pública de Render.
+Configurar:
 
-Después de obtener la URL de Vercel, volver a Render y ajustar `CORS_ORIGIN` a esa URL exacta.
+```env
+VITE_API_URL=https://cm-taskboard.onrender.com/api
+```
+
+Después de obtener la URL final de Vercel, volver a Render y cambiar:
+
+```env
+CORS_ORIGIN=<URL_FINAL_DE_VERCEL>
+```
 
 ## Credenciales Demo CTS
 
