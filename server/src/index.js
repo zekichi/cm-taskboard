@@ -2,8 +2,10 @@ import env from "./config/env.js";
 import { prisma } from "./lib/prisma.js";
 import app from "./app.js";
 
-const server = app.listen(env.PORT, () => {
-  console.log(`API lista en http://localhost:${env.PORT}`);
+const host = "0.0.0.0";
+
+const server = app.listen(env.PORT, host, () => {
+  console.log(`API lista en http://${host}:${env.PORT}`);
 });
 
 async function shutdown(signal) {
