@@ -38,7 +38,7 @@ export default function Login() {
       <InteractiveBackground variant="login" />
       <div className="tech-grid pointer-events-none absolute inset-0 opacity-70" />
 
-      <section className="motion-card relative z-10 grid w-full max-w-5xl overflow-hidden rounded-xl border border-white/10 bg-card/70 shadow-2xl shadow-black/35 backdrop-blur-2xl md:grid-cols-[1.05fr_0.95fr]">
+      <section className="ambient-panel parallax-depth motion-card relative z-10 grid w-full max-w-5xl overflow-hidden rounded-xl border border-white/10 bg-card/70 shadow-2xl shadow-black/35 backdrop-blur-2xl md:grid-cols-[1.05fr_0.95fr]">
         <div className="hidden border-r border-white/10 p-8 md:flex md:flex-col md:justify-between">
           <div>
             <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">

@@ -8,6 +8,8 @@
   :root {
     --font-inter: "Inter", sans-serif;
     --font-display: "Space Grotesk", sans-serif;
+    --parallax-x: 0deg;
+    --parallax-y: 0deg;
     --background: 226 45% 6%;
     --foreground: 210 35% 96%;
     --card: 224 38% 10%;
@@ -127,8 +129,20 @@
 
   .interactive-background canvas {
     @apply absolute inset-0 h-full w-full;
-    opacity: 0.72;
+    opacity: 0.82;
     mix-blend-mode: screen;
+  }
+
+  .interactive-background::before {
+    content: "";
+    position: absolute;
+    inset: -18%;
+    background:
+      conic-gradient(from 180deg at 50% 50%, transparent 0deg, hsl(var(--primary) / 0.06) 82deg, transparent 142deg, hsl(var(--accent) / 0.07) 230deg, transparent 320deg),
+      radial-gradient(circle at 50% 50%, hsl(var(--primary) / 0.08), transparent 45%);
+    filter: blur(18px);
+    opacity: 0.72;
+    animation: ambient-drift 18s linear infinite;
   }
 
   .interactive-background[data-motion="reduced"] canvas {
@@ -152,6 +166,13 @@
     will-change: left, top, opacity;
   }
 
+  .ambient-panel {
+    box-shadow:
+      0 22px 80px hsl(226 45% 3% / 0.38),
+      0 0 70px hsl(var(--primary) / 0.08),
+      inset 0 1px 0 hsl(0 0% 100% / 0.08);
+  }
+
   .glass-panel {
     @apply border border-white/10 bg-card/82 shadow-[0_18px_60px_hsl(226_45%_3%/0.36)] backdrop-blur-xl;
   }
@@ -168,9 +189,21 @@
       linear-gradient(90deg, hsl(0 0% 100% / 0.035) 1px, transparent 1px);
     background-size: 34px 34px;
     mask-image: linear-gradient(to bottom, black 0%, transparent 78%);
+    animation: grid-drift 26s linear infinite;
+  }
+
+  .parallax-depth {
+    transform:
+      perspective(1200px)
+      rotateX(var(--parallax-y))
+      rotateY(var(--parallax-x))
+      translateZ(0);
+    transition: transform 240ms ease-out;
+    transform-style: preserve-3d;
   }
 
   .motion-card {
+    position: relative;
     @apply transition-all duration-300 ease-out;
   }
 
@@ -180,6 +213,21 @@
       0 18px 54px hsl(226 45% 3% / 0.36),
       0 0 0 1px hsl(var(--primary) / 0.16),
       0 0 34px hsl(var(--primary) / 0.08);
+  }
+
+  .motion-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    background: linear-gradient(135deg, hsl(var(--primary) / 0.14), transparent 34%, hsl(var(--accent) / 0.12));
+    transition: opacity 240ms ease;
+  }
+
+  .motion-card:hover::after {
+    opacity: 1;
   }
 
   .kanban-column {
@@ -216,8 +264,30 @@
   }
 }
 
+@keyframes ambient-drift {
+  from {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(180deg) scale(1.05);
+  }
+  to {
+    transform: rotate(360deg) scale(1);
+  }
+}
+
+@keyframes grid-drift {
+  from {
+    background-position: 0 0, 0 0;
+  }
+  to {
+    background-position: 34px 34px, 34px 34px;
+  }
+}
+
 @media (max-width: 767px), (pointer: coarse) {
   .interactive-background canvas,
+  .interactive-background::before,
   .interactive-cursor-glow {
     display: none;
   }
@@ -234,11 +304,16 @@
   }
 
   .interactive-background canvas,
+  .interactive-background::before,
   .interactive-cursor-glow {
     display: none;
   }
 
   .motion-card:hover {
+    transform: none;
+  }
+
+  .parallax-depth {
     transform: none;
   }
 }

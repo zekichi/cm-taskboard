@@ -2,20 +2,26 @@ import { useEffect, useRef } from "react";
 
 const CONFIG = {
   login: {
-    particles: 64,
-    alpha: 0.58,
-    maxDistance: 138,
-    speed: 0.24,
-    pointerForce: 46,
+    particles: 76,
+    alpha: 0.66,
+    maxDistance: 148,
+    drift: 18,
+    orbit: 34,
+    pointerRadius: 150,
+    cursorOpacity: 0.58,
   },
   app: {
-    particles: 30,
-    alpha: 0.28,
-    maxDistance: 118,
-    speed: 0.16,
-    pointerForce: 28,
+    particles: 36,
+    alpha: 0.34,
+    maxDistance: 122,
+    drift: 12,
+    orbit: 22,
+    pointerRadius: 112,
+    cursorOpacity: 0.24,
   },
 };
+
+const TAU = Math.PI * 2;
 
 function prefersReducedMotion() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -23,6 +29,12 @@ function prefersReducedMotion() {
 
 function isCompactViewport() {
   return window.matchMedia("(max-width: 767px), (pointer: coarse)").matches;
+}
+
+function wrap(value, min, max) {
+  if (value < min) return max;
+  if (value > max) return min;
+  return value;
 }
 
 export default function InteractiveBackground({ variant = "app", className = "" }) {
@@ -48,78 +60,109 @@ export default function InteractiveBackground({ variant = "app", className = "" 
     let width = 0;
     let height = 0;
     let frameId = 0;
+    let lastTime = performance.now();
     let particles = [];
-    const pointer = { x: -9999, y: -9999, active: false };
+    const pointer = { x: -9999, y: -9999, active: false, strength: 0 };
+    const parent = root.parentElement;
+
+    const createParticle = (index, count) => {
+      const direction = (index / count) * TAU + Math.random() * 0.8;
+      const speed = 0.12 + Math.random() * 0.38;
+      const glow = 0.62 + Math.random() * 0.78;
+      const radius = 0.85 + Math.random() * 1.95;
+
+      return {
+        cx: Math.random() * width,
+        cy: Math.random() * height,
+        driftX: Math.cos(direction) * speed,
+        driftY: Math.sin(direction) * speed,
+        angle: Math.random() * TAU,
+        angleSpeed: (0.18 + Math.random() * 0.42) * (Math.random() > 0.5 ? 1 : -1),
+        orbitX: config.orbit * (0.45 + Math.random() * 1.35),
+        orbitY: config.orbit * (0.3 + Math.random() * 1.05),
+        wobble: 6 + Math.random() * config.drift,
+        wobbleSpeed: 0.3 + Math.random() * 0.9,
+        phase: Math.random() * TAU,
+        radius,
+        glow,
+        alpha: config.alpha * (0.42 + Math.random() * 0.72),
+        x: 0,
+        y: 0,
+      };
+    };
 
     const resize = () => {
       const rect = root.getBoundingClientRect();
       width = Math.max(1, rect.width);
       height = Math.max(1, rect.height);
-      const density = width < 1024 ? 0.62 : 1;
-      const count = Math.max(12, Math.round(config.particles * density));
-      const pixelRatio = Math.min(window.devicePixelRatio || 1, 1.6);
+      const density = width < 1024 ? 0.68 : 1;
+      const count = Math.max(14, Math.round(config.particles * density));
+      const pixelRatio = Math.min(window.devicePixelRatio || 1, 1.5);
 
       canvas.width = Math.floor(width * pixelRatio);
       canvas.height = Math.floor(height * pixelRatio);
       canvas.style.width = `${width}px`;
       canvas.style.height = `${height}px`;
       context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
-
-      particles = Array.from({ length: count }, (_, index) => {
-        const angle = (index / count) * Math.PI * 2;
-        return {
-          x: Math.random() * width,
-          y: Math.random() * height,
-          vx: Math.cos(angle) * config.speed * (0.6 + Math.random()),
-          vy: Math.sin(angle) * config.speed * (0.6 + Math.random()),
-          radius: 1 + Math.random() * 1.6,
-        };
-      });
+      particles = Array.from({ length: count }, (_, index) =>
+        createParticle(index, count)
+      );
     };
 
-    const draw = () => {
-      context.clearRect(0, 0, width, height);
-      context.globalCompositeOperation = "lighter";
+    const updateParticle = (particle, elapsed, delta) => {
+      particle.cx = wrap(particle.cx + particle.driftX * delta * 60, -40, width + 40);
+      particle.cy = wrap(particle.cy + particle.driftY * delta * 60, -40, height + 40);
+      particle.angle += particle.angleSpeed * delta;
 
-      for (const particle of particles) {
-        if (pointer.active) {
-          const dx = particle.x - pointer.x;
-          const dy = particle.y - pointer.y;
-          const distance = Math.hypot(dx, dy);
+      const orbitX = Math.cos(particle.angle) * particle.orbitX;
+      const orbitY = Math.sin(particle.angle * 0.86 + particle.phase) * particle.orbitY;
+      const wobbleX = Math.sin(elapsed * particle.wobbleSpeed + particle.phase) * particle.wobble;
+      const wobbleY = Math.cos(elapsed * (particle.wobbleSpeed * 0.74) + particle.phase) * particle.wobble;
 
-          if (distance < config.pointerForce && distance > 0) {
-            const push = (config.pointerForce - distance) / config.pointerForce;
-            particle.vx += (dx / distance) * push * 0.018;
-            particle.vy += (dy / distance) * push * 0.018;
-          }
+      let cursorX = 0;
+      let cursorY = 0;
+
+      if (pointer.active || pointer.strength > 0.01) {
+        const dx = pointer.x - (particle.cx + orbitX);
+        const dy = pointer.y - (particle.cy + orbitY);
+        const distance = Math.max(1, Math.hypot(dx, dy));
+
+        if (distance < config.pointerRadius) {
+          const falloff = (1 - distance / config.pointerRadius) * pointer.strength;
+          const direction = variant === "login" ? 1 : -1;
+          cursorX = (dx / distance) * falloff * config.orbit * 0.72 * direction;
+          cursorY = (dy / distance) * falloff * config.orbit * 0.72 * direction;
         }
-
-        particle.x += particle.vx;
-        particle.y += particle.vy;
-        particle.vx *= 0.992;
-        particle.vy *= 0.992;
-
-        if (particle.x < -10) particle.x = width + 10;
-        if (particle.x > width + 10) particle.x = -10;
-        if (particle.y < -10) particle.y = height + 10;
-        if (particle.y > height + 10) particle.y = -10;
-
-        const gradient = context.createRadialGradient(
-          particle.x,
-          particle.y,
-          0,
-          particle.x,
-          particle.y,
-          particle.radius * 4
-        );
-        gradient.addColorStop(0, `rgba(33, 212, 253, ${config.alpha})`);
-        gradient.addColorStop(1, "rgba(166, 108, 255, 0)");
-        context.fillStyle = gradient;
-        context.beginPath();
-        context.arc(particle.x, particle.y, particle.radius * 4, 0, Math.PI * 2);
-        context.fill();
       }
 
+      particle.x = particle.cx + orbitX + wobbleX + cursorX;
+      particle.y = particle.cy + orbitY + wobbleY + cursorY;
+    };
+
+    const drawParticle = (particle, elapsed) => {
+      const pulse = 0.76 + Math.sin(elapsed * particle.wobbleSpeed + particle.phase) * 0.24;
+      const drawRadius = particle.radius * (4.4 + pulse * 2.2);
+      const opacity = particle.alpha * pulse * particle.glow;
+      const gradient = context.createRadialGradient(
+        particle.x,
+        particle.y,
+        0,
+        particle.x,
+        particle.y,
+        drawRadius
+      );
+
+      gradient.addColorStop(0, `rgba(33, 212, 253, ${opacity})`);
+      gradient.addColorStop(0.38, `rgba(166, 108, 255, ${opacity * 0.42})`);
+      gradient.addColorStop(1, "rgba(33, 212, 253, 0)");
+
+      context.fillStyle = gradient;
+      context.beginPath();
+      context.arc(particle.x, particle.y, drawRadius, 0, TAU);
+      context.fill();
+    };
+
+    const drawConnections = () => {
       for (let i = 0; i < particles.length; i += 1) {
         for (let j = i + 1; j < particles.length; j += 1) {
           const a = particles[i];
@@ -127,9 +170,13 @@ export default function InteractiveBackground({ variant = "app", className = "" 
           const distance = Math.hypot(a.x - b.x, a.y - b.y);
 
           if (distance < config.maxDistance) {
-            const opacity = (1 - distance / config.maxDistance) * config.alpha * 0.22;
+            const opacity =
+              (1 - distance / config.maxDistance) *
+              config.alpha *
+              0.24 *
+              ((a.glow + b.glow) / 2);
             context.strokeStyle = `rgba(132, 220, 255, ${opacity})`;
-            context.lineWidth = 1;
+            context.lineWidth = 0.85;
             context.beginPath();
             context.moveTo(a.x, a.y);
             context.lineTo(b.x, b.y);
@@ -137,36 +184,77 @@ export default function InteractiveBackground({ variant = "app", className = "" 
           }
         }
       }
+    };
+
+    const draw = (time = performance.now()) => {
+      const delta = Math.min(0.034, Math.max(0.001, (time - lastTime) / 1000));
+      const elapsed = time * 0.001;
+      lastTime = time;
+      pointer.strength += ((pointer.active ? 1 : 0) - pointer.strength) * 0.08;
+
+      context.clearRect(0, 0, width, height);
+      context.globalCompositeOperation = "lighter";
+
+      for (const particle of particles) {
+        updateParticle(particle, elapsed, delta);
+      }
+
+      drawConnections();
+
+      for (const particle of particles) {
+        drawParticle(particle, elapsed);
+      }
 
       frameId = window.requestAnimationFrame(draw);
     };
 
     const updatePointer = (event) => {
       const rect = root.getBoundingClientRect();
-      pointer.x = event.clientX - rect.left;
-      pointer.y = event.clientY - rect.top;
-      pointer.active = true;
-      root.style.setProperty("--cursor-x", `${pointer.x}px`);
-      root.style.setProperty("--cursor-y", `${pointer.y}px`);
-      root.style.setProperty("--cursor-opacity", variant === "login" ? "0.58" : "0.26");
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      const inside = x >= 0 && x <= rect.width && y >= 0 && y <= rect.height;
+
+      pointer.x = x;
+      pointer.y = y;
+      pointer.active = inside;
+      root.style.setProperty("--cursor-x", `${x}px`);
+      root.style.setProperty("--cursor-y", `${y}px`);
+      root.style.setProperty("--cursor-opacity", inside ? String(config.cursorOpacity) : "0");
+
+      if (parent && inside) {
+        const parallaxX = ((x / rect.width) - 0.5) * 10;
+        const parallaxY = ((y / rect.height) - 0.5) * -10;
+        parent.style.setProperty("--parallax-x", `${parallaxX.toFixed(2)}deg`);
+        parent.style.setProperty("--parallax-y", `${parallaxY.toFixed(2)}deg`);
+      }
     };
 
     const clearPointer = () => {
       pointer.active = false;
       root.style.setProperty("--cursor-opacity", "0");
+      if (parent) {
+        parent.style.setProperty("--parallax-x", "0deg");
+        parent.style.setProperty("--parallax-y", "0deg");
+      }
     };
 
     resize();
     draw();
     window.addEventListener("resize", resize);
-    root.addEventListener("pointermove", updatePointer);
-    root.addEventListener("pointerleave", clearPointer);
+    window.addEventListener("pointermove", updatePointer, { passive: true });
+    window.addEventListener("pointerleave", clearPointer);
+    window.addEventListener("blur", clearPointer);
 
     return () => {
       window.cancelAnimationFrame(frameId);
       window.removeEventListener("resize", resize);
-      root.removeEventListener("pointermove", updatePointer);
-      root.removeEventListener("pointerleave", clearPointer);
+      window.removeEventListener("pointermove", updatePointer);
+      window.removeEventListener("pointerleave", clearPointer);
+      window.removeEventListener("blur", clearPointer);
+      if (parent) {
+        parent.style.removeProperty("--parallax-x");
+        parent.style.removeProperty("--parallax-y");
+      }
     };
   }, [variant]);
 

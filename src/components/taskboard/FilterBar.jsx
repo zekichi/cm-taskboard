@@ -40,7 +40,7 @@ export default function FilterBar({ filters, onFilterChange, members = [] }) {
   };
 
   return (
-    <section className="rounded-lg border border-white/10 bg-card/70 p-3 shadow-lg shadow-black/10 backdrop-blur">
+    <section className="motion-card rounded-lg border border-white/10 bg-card/70 p-3 shadow-lg shadow-black/10 backdrop-blur">
       <div className="flex flex-col gap-3 lg:flex-row">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />

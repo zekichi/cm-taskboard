@@ -12,7 +12,7 @@ export default function StatsCards({ tasks }) {
       {counts.map((stat) => (
         <div
           key={stat.key}
-          className="relative overflow-hidden rounded-lg border border-white/10 bg-card/75 p-4 shadow-lg shadow-black/15 backdrop-blur sm:p-5"
+          className="motion-card relative overflow-hidden rounded-lg border border-white/10 bg-card/75 p-4 shadow-lg shadow-black/15 backdrop-blur sm:p-5"
         >
           <div
             className={cn(

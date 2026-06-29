@@ -63,7 +63,7 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-8">
-      <section className="relative overflow-hidden rounded-xl border border-white/10 bg-card/75 p-5 shadow-2xl shadow-black/20 backdrop-blur-xl sm:p-6">
+      <section className="ambient-panel motion-card relative overflow-hidden rounded-xl border border-white/10 bg-card/75 p-5 shadow-2xl shadow-black/20 backdrop-blur-xl sm:p-6">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
@@ -173,7 +173,7 @@ export default function Dashboard() {
                 <button
                   key={task.id}
                   type="button"
-                  className="flex w-full items-center gap-3 rounded-lg border border-white/10 bg-card/75 p-3 text-left shadow-lg shadow-black/10 transition-all hover:border-primary/25 hover:bg-card"
+                  className="motion-card flex w-full items-center gap-3 rounded-lg border border-white/10 bg-card/75 p-3 text-left shadow-lg shadow-black/10 hover:border-primary/25 hover:bg-card"
                   onClick={() => {
                     setEditTask(task);
                     setFormOpen(true);

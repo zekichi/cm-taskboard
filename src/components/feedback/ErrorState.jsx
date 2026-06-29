@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 
 export default function ErrorState({ title = "Algo salió mal", message, onRetry }) {
   return (
-    <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-destructive shadow-[0_0_28px_hsl(var(--destructive)/0.12)]">
+    <div className="motion-card rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-destructive shadow-[0_0_28px_hsl(var(--destructive)/0.12)]">
       <div className="flex items-start gap-3">
         <AlertTriangle className="h-5 w-5 shrink-0" />
         <div className="min-w-0 flex-1">
