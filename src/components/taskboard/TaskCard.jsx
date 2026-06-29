@@ -60,7 +60,7 @@ export default function TaskCard({ task, onEdit, compact = false }) {
   return (
     <div
       className={cn(
-        "group overflow-hidden rounded-lg border border-white/10 bg-card/82 shadow-lg shadow-black/15 backdrop-blur transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-[0_18px_48px_hsl(226_45%_3%/0.34)] border-l-[3px]",
+        "motion-card group overflow-hidden rounded-lg border border-white/10 bg-card/82 shadow-lg shadow-black/15 backdrop-blur hover:border-primary/25 border-l-[3px]",
         PRIORITY_INDICATOR[task.priority] || "border-l-border",
         isBusy && "opacity-70"
       )}

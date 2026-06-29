@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { Columns3, LayoutDashboard, List, LogOut, Menu, Plus, Users, X } from "lucide-react";
 
+import InteractiveBackground from "@/components/effects/InteractiveBackground";
 import { useAuth } from "@/lib/AuthContext";
 import { ROLE_LABELS } from "@/lib/permissions";
 import { useWorkspace } from "@/lib/WorkspaceContext";
@@ -56,7 +57,8 @@ export default function Layout() {
     });
 
   return (
-    <div className="min-h-screen">
+    <div className="relative min-h-screen overflow-hidden">
+      <InteractiveBackground variant="app" className="opacity-70" />
       <header className="sticky top-0 z-50 border-b border-white/10 bg-background/78 backdrop-blur-2xl">
         <div className="mx-auto flex min-h-16 max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
           <Link to="/" className="flex items-center gap-3" aria-label="CM Taskboard">
@@ -209,7 +211,7 @@ export default function Layout() {
         )}
       </header>
 
-      <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+      <main className="relative z-10 mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
         <Outlet />
       </main>
     </div>

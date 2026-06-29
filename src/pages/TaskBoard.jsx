@@ -88,7 +88,7 @@ export default function TaskBoard() {
                 </span>
               </div>
 
-              <div className="min-h-[260px] flex-1 space-y-3 rounded-lg border border-white/10 bg-secondary/30 p-3 shadow-inner shadow-black/10">
+              <div className="kanban-column min-h-[260px] flex-1 space-y-3 rounded-lg border border-white/10 bg-secondary/30 p-3 shadow-inner shadow-black/10">
                 {columnTasks.map((task) => (
                   <TaskCard
                     key={task.id}

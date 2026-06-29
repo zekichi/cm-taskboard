@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Eye, EyeOff, LogIn, ShieldCheck, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
+import InteractiveBackground from "@/components/effects/InteractiveBackground";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -34,9 +35,10 @@ export default function Login() {
 
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-10">
+      <InteractiveBackground variant="login" />
       <div className="tech-grid pointer-events-none absolute inset-0 opacity-70" />
 
-      <section className="relative z-10 grid w-full max-w-5xl overflow-hidden rounded-xl border border-white/10 bg-card/70 shadow-2xl shadow-black/35 backdrop-blur-2xl md:grid-cols-[1.05fr_0.95fr]">
+      <section className="motion-card relative z-10 grid w-full max-w-5xl overflow-hidden rounded-xl border border-white/10 bg-card/70 shadow-2xl shadow-black/35 backdrop-blur-2xl md:grid-cols-[1.05fr_0.95fr]">
         <div className="hidden border-r border-white/10 p-8 md:flex md:flex-col md:justify-between">
           <div>
             <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
@@ -54,7 +56,7 @@ export default function Login() {
 
           <div className="grid grid-cols-3 gap-3 text-xs text-muted-foreground">
             {["CTS demo", "Roles activos", "Kanban + lista"].map((item) => (
-              <div key={item} className="rounded-lg border border-white/10 bg-white/[0.03] p-3">
+              <div key={item} className="motion-card rounded-lg border border-white/10 bg-white/[0.03] p-3">
                 {item}
               </div>
             ))}

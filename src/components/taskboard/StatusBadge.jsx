@@ -8,7 +8,7 @@ export default function StatusBadge({ status, size = "sm" }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border font-medium",
+        "badge-shimmer inline-flex items-center gap-1.5 rounded-full border font-medium transition-all duration-200 hover:-translate-y-px",
         config.badgeClass,
         size === "sm" ? "px-2 py-0.5 text-[11px]" : "px-3 py-1 text-xs"
       )}
