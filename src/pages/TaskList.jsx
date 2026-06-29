@@ -18,7 +18,7 @@ import { useWorkspace } from "@/lib/WorkspaceContext";
 const ALL_ASSIGNEES = "Todos";
 
 export default function TaskList() {
-  const { organizationId, teamId, members } = useWorkspace();
+  const { organizationId, teamId, members, permissions } = useWorkspace();
   const [formOpen, setFormOpen] = useState(false);
   const [editTask, setEditTask] = useState(null);
   const [filters, setFilters] = useState({
@@ -27,6 +27,7 @@ export default function TaskList() {
     status: ALL_STATUSES_FILTER,
     assignedToId: ALL_ASSIGNEES,
   });
+  const canManageTasks = permissions.manageTasks;
 
   const apiFilters = {
     organizationId,
@@ -39,11 +40,11 @@ export default function TaskList() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
 
-    if (params.get("new") === "true") {
+    if (params.get("new") === "true" && canManageTasks) {
       setFormOpen(true);
       window.history.replaceState({}, "", window.location.pathname);
     }
-  }, []);
+  }, [canManageTasks]);
 
   const filteredTasks = useMemo(() => {
     return tasks.filter((task) => {
@@ -62,10 +63,7 @@ export default function TaskList() {
         return false;
       }
 
-      if (
-        filters.status !== ALL_STATUSES_FILTER &&
-        task.status !== filters.status
-      ) {
+      if (filters.status !== ALL_STATUSES_FILTER && task.status !== filters.status) {
         return false;
       }
 
@@ -89,32 +87,37 @@ export default function TaskList() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.22em] text-primary">
+            Centro de tareas
+          </p>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
             Tareas
           </h1>
-          <p className="text-muted-foreground mt-1">
-            {filteredTasks.length} de {tasks.length} tareas
+          <p className="mt-1 text-muted-foreground">
+            {filteredTasks.length} de {tasks.length} tareas visibles
           </p>
         </div>
 
-        <Button
-          onClick={() => {
-            setEditTask(null);
-            setFormOpen(true);
-          }}
-          className="gap-2"
-        >
-          <Plus className="h-4 w-4" />
-          Nueva tarea
-        </Button>
+        {canManageTasks && (
+          <Button
+            onClick={() => {
+              setEditTask(null);
+              setFormOpen(true);
+            }}
+            className="gap-2"
+          >
+            <Plus className="h-4 w-4" />
+            Nueva tarea
+          </Button>
+        )}
       </div>
 
       <FilterBar filters={filters} onFilterChange={setFilters} members={members} />
 
       {filteredTasks.length > 0 ? (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filteredTasks.map((task) => (
             <TaskCard
               key={task.id}
@@ -131,7 +134,9 @@ export default function TaskList() {
           title="No se encontraron tareas"
           description={
             tasks.length === 0
-              ? "Crea tu primera tarea para comenzar."
+              ? canManageTasks
+                ? "Crea tu primera tarea para comenzar."
+                : "Aún no hay tareas asignadas a este espacio."
               : "Prueba con otros filtros."
           }
         />

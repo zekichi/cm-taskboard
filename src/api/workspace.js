@@ -11,6 +11,10 @@ function extractData(response) {
   return response?.data?.data;
 }
 
+function getErrorMessage(error, fallback) {
+  return error?.response?.data?.error?.message || error?.userMessage || fallback;
+}
+
 export async function fetchOrganizations() {
   const response = await api.get("/organizations");
   return extractData(response) || [];
@@ -43,7 +47,7 @@ export function useCreateTeam() {
       toast.success("Equipo creado");
     },
     onError: (error) => {
-      toast.error(error?.response?.data?.error?.message || "No se pudo crear el equipo");
+      toast.error(getErrorMessage(error, "No se pudo crear el equipo"));
     },
   });
 }
@@ -59,7 +63,7 @@ export function useAddOrganizationMember() {
       toast.success("Miembro agregado");
     },
     onError: (error) => {
-      toast.error(error?.response?.data?.error?.message || "No se pudo agregar el miembro");
+      toast.error(getErrorMessage(error, "No se pudo agregar el miembro"));
     },
   });
 }

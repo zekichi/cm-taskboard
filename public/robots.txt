@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://cm-taskboard.vercel.app/sitemap.xml

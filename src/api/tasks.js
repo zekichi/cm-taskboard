@@ -14,8 +14,14 @@ function extractData(response) {
 
 function cleanParams(params) {
   return Object.fromEntries(
-    Object.entries(params || {}).filter(([, value]) => value !== null && value !== undefined && value !== "")
+    Object.entries(params || {}).filter(
+      ([, value]) => value !== null && value !== undefined && value !== ""
+    )
   );
+}
+
+function getErrorMessage(error, fallback) {
+  return error?.response?.data?.error?.message || error?.userMessage || fallback;
 }
 
 export async function fetchTasks(filters = {}) {
@@ -57,9 +63,7 @@ export function useSaveTask() {
       toast.success("Tarea guardada");
     },
     onError: (error) => {
-      const message =
-        error?.response?.data?.error?.message || "No se pudo guardar la tarea";
-      toast.error(message);
+      toast.error(getErrorMessage(error, "No se pudo guardar la tarea"));
     },
   });
 }
@@ -74,10 +78,7 @@ export function useUpdateTaskStatus() {
       toast.success("Estado actualizado");
     },
     onError: (error) => {
-      const message =
-        error?.response?.data?.error?.message ||
-        "No se pudo actualizar el estado";
-      toast.error(message);
+      toast.error(getErrorMessage(error, "No se pudo actualizar el estado"));
     },
   });
 }
@@ -92,9 +93,7 @@ export function useDeleteTask() {
       toast.success("Tarea eliminada");
     },
     onError: (error) => {
-      const message =
-        error?.response?.data?.error?.message || "No se pudo eliminar la tarea";
-      toast.error(message);
+      toast.error(getErrorMessage(error, "No se pudo eliminar la tarea"));
     },
   });
 }

@@ -21,7 +21,7 @@ export const TASK_STATUS_OPTIONS = [
     pluralLabel: "Pendientes",
     icon: Clock,
     color: "bg-amber-500",
-    badgeClass: "bg-amber-100 text-amber-700 border-amber-200",
+    badgeClass: "bg-amber-400/12 text-amber-200 border-amber-400/25",
     gradient: "from-amber-500 to-orange-500",
   },
   {
@@ -30,7 +30,7 @@ export const TASK_STATUS_OPTIONS = [
     pluralLabel: "En diseño",
     icon: Palette,
     color: "bg-violet-500",
-    badgeClass: "bg-violet-100 text-violet-700 border-violet-200",
+    badgeClass: "bg-violet-400/12 text-violet-200 border-violet-400/25",
     gradient: "from-violet-500 to-purple-500",
   },
   {
@@ -39,7 +39,7 @@ export const TASK_STATUS_OPTIONS = [
     pluralLabel: "Aprobados",
     icon: CheckCircle2,
     color: "bg-emerald-500",
-    badgeClass: "bg-emerald-100 text-emerald-700 border-emerald-200",
+    badgeClass: "bg-emerald-400/12 text-emerald-200 border-emerald-400/25",
     gradient: "from-emerald-500 to-green-500",
   },
   {
@@ -48,7 +48,7 @@ export const TASK_STATUS_OPTIONS = [
     pluralLabel: "Publicados",
     icon: Rocket,
     color: "bg-blue-500",
-    badgeClass: "bg-blue-100 text-blue-700 border-blue-200",
+    badgeClass: "bg-cyan-400/12 text-cyan-200 border-cyan-400/25",
     gradient: "from-blue-500 to-cyan-500",
   },
 ];
@@ -70,35 +70,35 @@ export const PLATFORM_OPTIONS = [
 
 export const PLATFORM_CONFIG = {
   Instagram: {
-    color: "bg-pink-100 text-pink-700 border-pink-200",
+    color: "bg-pink-400/12 text-pink-200 border-pink-400/25",
     label: "IG",
   },
   TikTok: {
-    color: "bg-slate-100 text-slate-700 border-slate-200",
+    color: "bg-slate-300/12 text-slate-200 border-slate-300/25",
     label: "TT",
   },
   Facebook: {
-    color: "bg-blue-100 text-blue-700 border-blue-200",
+    color: "bg-blue-400/12 text-blue-200 border-blue-400/25",
     label: "FB",
   },
   "Twitter/X": {
-    color: "bg-sky-100 text-sky-700 border-sky-200",
+    color: "bg-sky-400/12 text-sky-200 border-sky-400/25",
     label: "X",
   },
   LinkedIn: {
-    color: "bg-indigo-100 text-indigo-700 border-indigo-200",
+    color: "bg-indigo-400/12 text-indigo-200 border-indigo-400/25",
     label: "IN",
   },
   YouTube: {
-    color: "bg-red-100 text-red-700 border-red-200",
+    color: "bg-red-400/12 text-red-200 border-red-400/25",
     label: "YT",
   },
   Pinterest: {
-    color: "bg-rose-100 text-rose-700 border-rose-200",
+    color: "bg-rose-400/12 text-rose-200 border-rose-400/25",
     label: "PI",
   },
   Otra: {
-    color: "bg-gray-100 text-gray-700 border-gray-200",
+    color: "bg-gray-300/12 text-gray-200 border-gray-300/25",
     label: "OT",
   },
 };

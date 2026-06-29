@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 
 import { api } from "@/api/apiClient";
 
@@ -13,6 +13,14 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [sessionMessage, setSessionMessage] = useState("");
+
+  const clearSession = useCallback((message = "") => {
+    localStorage.removeItem("auth_token");
+    setUser(null);
+    setIsAuthenticated(false);
+    setSessionMessage(message);
+  }, []);
 
   useEffect(() => {
     const token = localStorage.getItem("auth_token");
@@ -31,12 +39,19 @@ export function AuthProvider({ children }) {
         setIsAuthenticated(Boolean(me));
       })
       .catch(() => {
-        localStorage.removeItem("auth_token");
-        setUser(null);
-        setIsAuthenticated(false);
+        clearSession("Tu sesión expiró. Inicia sesión nuevamente.");
       })
       .finally(() => setLoading(false));
-  }, []);
+  }, [clearSession]);
+
+  useEffect(() => {
+    const handleExpiredSession = () => {
+      clearSession("Tu sesión expiró. Inicia sesión nuevamente.");
+    };
+
+    window.addEventListener("auth:expired", handleExpiredSession);
+    return () => window.removeEventListener("auth:expired", handleExpiredSession);
+  }, [clearSession]);
 
   const login = async (credentials) => {
     const res = await api.post("/auth/login", credentials);
@@ -49,12 +64,11 @@ export function AuthProvider({ children }) {
     localStorage.setItem("auth_token", payload.token);
     setUser(payload.user);
     setIsAuthenticated(true);
+    setSessionMessage("");
   };
 
   const logout = () => {
-    localStorage.removeItem("auth_token");
-    setUser(null);
-    setIsAuthenticated(false);
+    clearSession("");
   };
 
   return (
@@ -63,6 +77,7 @@ export function AuthProvider({ children }) {
         user,
         isAuthenticated,
         loading,
+        sessionMessage,
         login,
         logout,
       }}

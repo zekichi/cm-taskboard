@@ -1,10 +1,13 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 import { useOrganizations } from "@/api/workspace";
+import { useAuth } from "@/lib/AuthContext";
+import { getPermissions } from "@/lib/permissions";
 
 const WorkspaceContext = createContext(null);
 
 export function WorkspaceProvider({ children }) {
+  const { user } = useAuth();
   const organizationsQuery = useOrganizations();
   const organizations = organizationsQuery.data || [];
   const [organizationId, setOrganizationId] = useState("");
@@ -21,6 +24,10 @@ export function WorkspaceProvider({ children }) {
   );
   const teams = selectedOrganization?.teams || [];
   const members = selectedOrganization?.members || [];
+  const currentMembership = members.find(
+    (member) => String(member.userId) === String(user?.id)
+  );
+  const permissions = getPermissions(currentMembership?.role);
 
   useEffect(() => {
     if (teamId && !teams.some((team) => String(team.id) === String(teamId))) {
@@ -38,11 +45,23 @@ export function WorkspaceProvider({ children }) {
       teamId,
       setTeamId,
       members,
+      currentMembership,
+      permissions,
       isLoading: organizationsQuery.isLoading,
       isError: organizationsQuery.isError,
       refetch: organizationsQuery.refetch,
     }),
-    [organizations, selectedOrganization, organizationId, teams, teamId, members, organizationsQuery]
+    [
+      organizations,
+      selectedOrganization,
+      organizationId,
+      teams,
+      teamId,
+      members,
+      currentMembership,
+      permissions,
+      organizationsQuery,
+    ]
   );
 
   return (

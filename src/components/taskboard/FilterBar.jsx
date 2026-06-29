@@ -40,87 +40,88 @@ export default function FilterBar({ filters, onFilterChange, members = [] }) {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row gap-3">
-      <div className="relative flex-1">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Buscar tareas..."
-          className="pl-9"
-          value={filters.search}
-          onChange={(event) =>
-            onFilterChange({ ...filters, search: event.target.value })
-          }
-        />
-      </div>
+    <section className="rounded-lg border border-white/10 bg-card/70 p-3 shadow-lg shadow-black/10 backdrop-blur">
+      <div className="flex flex-col gap-3 lg:flex-row">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Buscar por título o descripción..."
+            className="pl-9"
+            value={filters.search}
+            onChange={(event) =>
+              onFilterChange({ ...filters, search: event.target.value })
+            }
+            aria-label="Buscar tareas"
+          />
+        </div>
 
-      <div className="flex flex-wrap gap-2">
-        <Select
-          value={filters.platform}
-          onValueChange={(value) =>
-            onFilterChange({ ...filters, platform: value })
-          }
-        >
-          <SelectTrigger className="w-[140px]">
-            <SelectValue placeholder="Plataforma" />
-          </SelectTrigger>
-          <SelectContent>
-            {platformFilters.map((platform) => (
-              <SelectItem key={platform} value={platform}>
-                {platform}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 lg:flex">
+          <Select
+            value={filters.platform}
+            onValueChange={(value) =>
+              onFilterChange({ ...filters, platform: value })
+            }
+          >
+            <SelectTrigger className="w-full lg:w-[150px]">
+              <SelectValue placeholder="Plataforma" />
+            </SelectTrigger>
+            <SelectContent>
+              {platformFilters.map((platform) => (
+                <SelectItem key={platform} value={platform}>
+                  {platform}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-        <Select
-          value={filters.status}
-          onValueChange={(value) =>
-            onFilterChange({ ...filters, status: value })
-          }
-        >
-          <SelectTrigger className="w-[140px]">
-            <SelectValue placeholder="Estado" />
-          </SelectTrigger>
-          <SelectContent>
-            {statusFilters.map((status) => (
-              <SelectItem key={status.key} value={status.key}>
-                {status.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          <Select
+            value={filters.status}
+            onValueChange={(value) => onFilterChange({ ...filters, status: value })}
+          >
+            <SelectTrigger className="w-full lg:w-[150px]">
+              <SelectValue placeholder="Estado" />
+            </SelectTrigger>
+            <SelectContent>
+              {statusFilters.map((status) => (
+                <SelectItem key={status.key} value={status.key}>
+                  {status.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-        <Select
-          value={filters.assignedToId}
-          onValueChange={(value) =>
-            onFilterChange({ ...filters, assignedToId: value })
-          }
-        >
-          <SelectTrigger className="w-[170px]">
-            <SelectValue placeholder="Responsable" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={ALL_ASSIGNEES}>Responsables</SelectItem>
-            {members.map((member) => (
-              <SelectItem key={member.userId} value={String(member.userId)}>
-                {member.user?.name || member.user?.email}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          <Select
+            value={filters.assignedToId}
+            onValueChange={(value) =>
+              onFilterChange({ ...filters, assignedToId: value })
+            }
+          >
+            <SelectTrigger className="w-full lg:w-[190px]">
+              <SelectValue placeholder="Responsable" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={ALL_ASSIGNEES}>Responsables</SelectItem>
+              {members.map((member) => (
+                <SelectItem key={member.userId} value={String(member.userId)}>
+                  {member.user?.name || member.user?.email}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
         {hasFilters && (
           <Button
             variant="ghost"
             size="icon"
             onClick={clearFilters}
-            className="shrink-0"
+            className="shrink-0 self-end lg:self-auto"
             aria-label="Limpiar filtros"
           >
             <X className="h-4 w-4" />
           </Button>
         )}
       </div>
-    </div>
+    </section>
   );
 }

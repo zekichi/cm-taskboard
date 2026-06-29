@@ -43,9 +43,11 @@ const initialForm = {
 
 export default function TaskFormDialog({ open, onOpenChange, task, onSaved }) {
   const saveTask = useSaveTask();
-  const { organizationId, teamId, teams, members } = useWorkspace();
+  const { organizationId, teamId, teams, members, permissions } = useWorkspace();
   const [form, setForm] = useState(initialForm);
   const [error, setError] = useState("");
+  const canManageTasks = permissions.manageTasks;
+  const canAssignTasks = permissions.assignTasks;
 
   useEffect(() => {
     if (task) {
@@ -75,6 +77,11 @@ export default function TaskFormDialog({ open, onOpenChange, task, onSaved }) {
     event.preventDefault();
     setError("");
 
+    if (!canManageTasks) {
+      setError("Tu rol actual permite ver tareas, pero no modificarlas.");
+      return;
+    }
+
     const payload = {
       ...form,
       organizationId: Number(form.organizationId),
@@ -94,23 +101,31 @@ export default function TaskFormDialog({ open, onOpenChange, task, onSaved }) {
     } catch (error) {
       const message =
         error?.response?.data?.error?.message ||
+        error?.userMessage ||
         "No se pudo guardar la tarea. Revisa los datos e intenta otra vez.";
       setError(message);
     }
   };
 
   const saving = saveTask.isPending;
+  const formDisabled = saving || !canManageTasks;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-xl">
+      <DialogContent className="max-h-[92vh] overflow-y-auto sm:max-w-xl">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">
             {task?.id ? "Editar tarea" : "Nueva tarea"}
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4 mt-2">
+        <form onSubmit={handleSubmit} className="mt-2 space-y-4">
+          {!canManageTasks && (
+            <div className="rounded-md border border-amber-400/25 bg-amber-400/10 p-3 text-sm text-amber-100">
+              Tu rol actual no permite crear ni editar tareas.
+            </div>
+          )}
+
           {error && (
             <div className="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
               {error}
@@ -123,9 +138,8 @@ export default function TaskFormDialog({ open, onOpenChange, task, onSaved }) {
               id="title"
               placeholder="Ej: Reel de productos nuevos"
               value={form.title}
-              onChange={(event) =>
-                setForm({ ...form, title: event.target.value })
-              }
+              onChange={(event) => setForm({ ...form, title: event.target.value })}
+              disabled={formDisabled}
               required
             />
           </div>
@@ -140,10 +154,11 @@ export default function TaskFormDialog({ open, onOpenChange, task, onSaved }) {
                 setForm({ ...form, description: event.target.value })
               }
               rows={3}
+              disabled={formDisabled}
             />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label>Equipo</Label>
               <Select
@@ -154,6 +169,7 @@ export default function TaskFormDialog({ open, onOpenChange, task, onSaved }) {
                     teamId: value === UNASSIGNED_VALUE ? "" : value,
                   })
                 }
+                disabled={formDisabled}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -179,6 +195,7 @@ export default function TaskFormDialog({ open, onOpenChange, task, onSaved }) {
                     assignedToId: value === UNASSIGNED_VALUE ? "" : value,
                   })
                 }
+                disabled={formDisabled || !canAssignTasks}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -187,7 +204,8 @@ export default function TaskFormDialog({ open, onOpenChange, task, onSaved }) {
                   <SelectItem value={UNASSIGNED_VALUE}>Sin asignar</SelectItem>
                   {members.map((member) => (
                     <SelectItem key={member.userId} value={String(member.userId)}>
-                      {member.user?.name || member.user?.email} · {member.specialty || member.role}
+                      {member.user?.name || member.user?.email} ·{" "}
+                      {member.specialty || member.role}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -195,14 +213,13 @@ export default function TaskFormDialog({ open, onOpenChange, task, onSaved }) {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label>Plataforma *</Label>
               <Select
                 value={form.platform}
-                onValueChange={(value) =>
-                  setForm({ ...form, platform: value })
-                }
+                onValueChange={(value) => setForm({ ...form, platform: value })}
+                disabled={formDisabled}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -222,6 +239,7 @@ export default function TaskFormDialog({ open, onOpenChange, task, onSaved }) {
               <Select
                 value={form.status}
                 onValueChange={(value) => setForm({ ...form, status: value })}
+                disabled={formDisabled}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -237,14 +255,13 @@ export default function TaskFormDialog({ open, onOpenChange, task, onSaved }) {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label>Prioridad</Label>
               <Select
                 value={form.priority}
-                onValueChange={(value) =>
-                  setForm({ ...form, priority: value })
-                }
+                onValueChange={(value) => setForm({ ...form, priority: value })}
+                disabled={formDisabled}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -265,9 +282,8 @@ export default function TaskFormDialog({ open, onOpenChange, task, onSaved }) {
                 id="due_date"
                 type="date"
                 value={form.due_date}
-                onChange={(event) =>
-                  setForm({ ...form, due_date: event.target.value })
-                }
+                onChange={(event) => setForm({ ...form, due_date: event.target.value })}
+                disabled={formDisabled}
               />
             </div>
           </div>
@@ -282,8 +298,11 @@ export default function TaskFormDialog({ open, onOpenChange, task, onSaved }) {
               Cancelar
             </Button>
 
-            <Button type="submit" disabled={saving || !form.title.trim() || !form.organizationId}>
-              {saving && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+            <Button
+              type="submit"
+              disabled={formDisabled || !form.title.trim() || !form.organizationId}
+            >
+              {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {task?.id ? "Guardar cambios" : "Crear tarea"}
             </Button>
           </div>

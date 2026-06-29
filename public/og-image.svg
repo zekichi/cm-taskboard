@@ -1,0 +1,14 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#06111F"/>
+  <circle cx="260" cy="120" r="260" fill="#21D4FD" fill-opacity=".18"/>
+  <circle cx="980" cy="80" r="280" fill="#A66CFF" fill-opacity=".2"/>
+  <rect x="96" y="92" width="1008" height="446" rx="28" fill="#101B2E" fill-opacity=".86" stroke="white" stroke-opacity=".12"/>
+  <text x="150" y="205" fill="#EAF6FF" font-family="Inter, Arial, sans-serif" font-size="66" font-weight="800">CM Taskboard</text>
+  <text x="154" y="270" fill="#9FB2C7" font-family="Inter, Arial, sans-serif" font-size="30">Gestión de tareas para equipos de community management</text>
+  <rect x="154" y="335" width="210" height="92" rx="18" fill="#21D4FD" fill-opacity=".14" stroke="#21D4FD" stroke-opacity=".36"/>
+  <rect x="400" y="335" width="210" height="92" rx="18" fill="#A66CFF" fill-opacity=".14" stroke="#A66CFF" stroke-opacity=".36"/>
+  <rect x="646" y="335" width="210" height="92" rx="18" fill="#22C55E" fill-opacity=".12" stroke="#22C55E" stroke-opacity=".28"/>
+  <text x="184" y="390" fill="#EAF6FF" font-family="Inter, Arial, sans-serif" font-size="26" font-weight="700">Kanban</text>
+  <text x="430" y="390" fill="#EAF6FF" font-family="Inter, Arial, sans-serif" font-size="26" font-weight="700">Equipos</text>
+  <text x="676" y="390" fill="#EAF6FF" font-family="Inter, Arial, sans-serif" font-size="26" font-weight="700">Roles</text>
+</svg>

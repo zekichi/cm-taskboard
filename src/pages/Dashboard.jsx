@@ -15,7 +15,8 @@ import { TASK_STATUS } from "@/constants/task-options";
 import { useWorkspace } from "@/lib/WorkspaceContext";
 
 export default function Dashboard() {
-  const { organizationId, teamId, selectedOrganization } = useWorkspace();
+  const { organizationId, teamId, selectedOrganization, currentMembership } =
+    useWorkspace();
   const { data: tasks = [], isLoading, isError, refetch } = useTasks({
     organizationId,
     teamId,
@@ -62,45 +63,69 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
-          Dashboard
-        </h1>
-        <p className="text-muted-foreground mt-1">
-          {selectedOrganization?.name || "Organización"} ·{" "}
-          {format(new Date(), "EEEE, d 'de' MMMM", { locale: es })} ·{" "}
-          {tasks.length} tareas
-        </p>
-      </div>
+      <section className="relative overflow-hidden rounded-xl border border-white/10 bg-card/75 p-5 shadow-2xl shadow-black/20 backdrop-blur-xl sm:p-6">
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.22em] text-primary">
+              Centro de operaciones
+            </p>
+            <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+              Dashboard
+            </h1>
+            <p className="mt-2 text-sm text-muted-foreground">
+              {selectedOrganization?.name || "Organización"} ·{" "}
+              {format(new Date(), "EEEE, d 'de' MMMM", { locale: es })} ·{" "}
+              {tasks.length} tareas
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-3">
+            <div className="rounded-lg border border-white/10 bg-white/[0.03] px-4 py-3">
+              <p className="text-xs text-muted-foreground">Rol</p>
+              <p className="font-semibold text-foreground">
+                {currentMembership?.role || "MEMBER"}
+              </p>
+            </div>
+            <div className="rounded-lg border border-white/10 bg-white/[0.03] px-4 py-3">
+              <p className="text-xs text-muted-foreground">Vencidas</p>
+              <p className="font-semibold text-destructive">{overdueTasks.length}</p>
+            </div>
+            <div className="rounded-lg border border-white/10 bg-white/[0.03] px-4 py-3">
+              <p className="text-xs text-muted-foreground">Próximas</p>
+              <p className="font-semibold text-primary">{upcomingTasks.length}</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <StatsCards tasks={tasks} />
 
       {overdueTasks.length > 0 && (
-        <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 flex items-center gap-3">
-          <CalendarDays className="h-5 w-5 text-destructive shrink-0" />
+        <div className="flex items-center gap-3 rounded-lg border border-destructive/25 bg-destructive/10 p-4">
+          <CalendarDays className="h-5 w-5 shrink-0 text-destructive" />
           <div>
             <p className="text-sm font-semibold text-destructive">
-              {overdueTasks.length} tarea
-              {overdueTasks.length > 1 ? "s" : ""} atrasada
-              {overdueTasks.length > 1 ? "s" : ""}
+              {overdueTasks.length} tarea{overdueTasks.length > 1 ? "s" : ""}{" "}
+              atrasada{overdueTasks.length > 1 ? "s" : ""}
             </p>
-            <p className="text-xs text-destructive/80 mt-0.5">
-              Revisa las tareas con fecha vencida.
+            <p className="mt-0.5 text-xs text-destructive/80">
+              Revisa las tareas con fecha vencida antes de publicar.
             </p>
           </div>
         </div>
       )}
 
-      <div className="grid lg:grid-cols-2 gap-6">
+      <div className="grid gap-6 lg:grid-cols-2">
         <section>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="flex items-center gap-2 text-lg font-semibold text-foreground">
               <TrendingUp className="h-5 w-5 text-primary" />
               Tareas recientes
             </h2>
             <Link
               to="/tasks"
-              className="text-sm text-primary hover:underline flex items-center gap-1"
+              className="flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
             >
               Ver todas <ArrowRight className="h-3.5 w-3.5" />
             </Link>
@@ -129,14 +154,14 @@ export default function Dashboard() {
         </section>
 
         <section>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="flex items-center gap-2 text-lg font-semibold text-foreground">
               <CalendarDays className="h-5 w-5 text-accent" />
               Próximas entregas
             </h2>
             <Link
               to="/board"
-              className="text-sm text-primary hover:underline flex items-center gap-1"
+              className="flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
             >
               Tablero <ArrowRight className="h-3.5 w-3.5" />
             </Link>
@@ -148,14 +173,14 @@ export default function Dashboard() {
                 <button
                   key={task.id}
                   type="button"
-                  className="flex w-full items-center gap-3 bg-card rounded-lg border border-border/60 p-3 text-left hover:shadow-sm transition-shadow"
+                  className="flex w-full items-center gap-3 rounded-lg border border-white/10 bg-card/75 p-3 text-left shadow-lg shadow-black/10 transition-all hover:border-primary/25 hover:bg-card"
                   onClick={() => {
                     setEditTask(task);
                     setFormOpen(true);
                   }}
                 >
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground truncate">
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold text-foreground">
                       {task.title}
                     </p>
                     <p className="text-xs text-muted-foreground">
@@ -163,7 +188,7 @@ export default function Dashboard() {
                       {task.assignedTo?.name || "Sin responsable"}
                     </p>
                   </div>
-                  <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">
+                  <span className="whitespace-nowrap rounded-full border border-white/10 bg-white/[0.03] px-2 py-1 text-xs font-semibold text-muted-foreground">
                     {isToday(new Date(task.due_date)) && "Hoy"}
                     {isTomorrow(new Date(task.due_date)) && "Mañana"}
                     {!isToday(new Date(task.due_date)) &&

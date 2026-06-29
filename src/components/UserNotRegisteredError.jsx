@@ -1,14 +1,15 @@
 export default function UserNotRegisteredError() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background p-6">
-      <div className="max-w-md w-full rounded-lg border border-border bg-card p-8 shadow">
+      <div className="w-full max-w-md rounded-lg border border-white/10 bg-card/80 p-8 shadow-2xl shadow-black/20">
         <div className="text-center">
-          <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-red-100 mb-6">
+          <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full border border-destructive/25 bg-destructive/10">
             <svg
-              className="h-8 w-8 text-red-600"
+              className="h-8 w-8 text-destructive"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              aria-hidden="true"
             >
               <path
                 strokeLinecap="round"
@@ -19,17 +20,17 @@ export default function UserNotRegisteredError() {
             </svg>
           </div>
 
-          <h1 className="text-2xl font-bold text-foreground mb-3">
+          <h1 className="mb-3 text-2xl font-bold text-foreground">
             Acceso denegado
           </h1>
 
-          <p className="text-muted-foreground mb-6">
+          <p className="mb-6 text-muted-foreground">
             No tienes permisos para acceder a esta sección.
           </p>
 
-          <div className="rounded-md bg-secondary p-4 text-sm text-muted-foreground">
+          <div className="rounded-md border border-white/10 bg-secondary/60 p-4 text-sm text-muted-foreground">
             <p>Posibles soluciones:</p>
-            <ul className="list-disc list-inside mt-2 space-y-1">
+            <ul className="mt-2 list-inside list-disc space-y-1">
               <li>Verifica tu cuenta o sesión</li>
               <li>Intenta volver al inicio</li>
               <li>Contacta al administrador si crees que es un error</li>
