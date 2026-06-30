@@ -58,7 +58,7 @@ export default function Layout() {
     });
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden">
+    <div className="relative min-h-screen">
       <InteractiveBackground variant="app" className="opacity-70" />
       <header className="sticky top-0 z-50 border-b border-white/10 bg-background/78 backdrop-blur-2xl">
         <div className="mx-auto flex min-h-16 max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">

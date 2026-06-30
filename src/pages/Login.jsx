@@ -34,7 +34,7 @@ export default function Login() {
   };
 
   return (
-    <main className="relative flex min-h-screen items-center justify-center overflow-x-hidden px-4 py-10">
+    <main className="relative flex min-h-screen items-center justify-center px-4 py-10">
       <InteractiveBackground variant="login" />
       <div className="tech-grid pointer-events-none absolute inset-0 opacity-70" />
 

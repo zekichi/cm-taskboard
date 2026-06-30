@@ -219,7 +219,6 @@ export default function InteractiveBackground({ variant = "app", className = "" 
       root.style.setProperty("--cursor-x", `${x}px`);
       root.style.setProperty("--cursor-y", `${y}px`);
       root.style.setProperty("--cursor-opacity", inside ? String(config.cursorOpacity) : "0");
-
     };
 
     const clearPointer = () => {
