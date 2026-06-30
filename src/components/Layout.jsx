@@ -58,7 +58,7 @@ export default function Layout() {
     });
 
   return (
-    <div className="relative min-h-screen overflow-hidden">
+    <div className="relative min-h-screen overflow-x-hidden">
       <InteractiveBackground variant="app" className="opacity-70" />
       <header className="sticky top-0 z-50 border-b border-white/10 bg-background/78 backdrop-blur-2xl">
         <div className="mx-auto flex min-h-16 max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
@@ -133,7 +133,7 @@ export default function Layout() {
           <button
             type="button"
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="rounded-lg p-2 text-muted-foreground hover:bg-primary/10 hover:text-foreground md:hidden"
+            className="rounded-lg p-2 text-muted-foreground hover:bg-primary/10 hover:text-foreground lg:hidden"
             aria-label={mobileOpen ? "Cerrar menú" : "Abrir menú"}
             aria-expanded={mobileOpen}
           >
@@ -142,7 +142,7 @@ export default function Layout() {
         </div>
 
         {mobileOpen && (
-          <div className="space-y-3 border-t border-white/10 bg-background/96 p-4 md:hidden">
+          <div className="space-y-3 border-t border-white/10 bg-background/96 p-4 lg:hidden">
             <div className="grid gap-2">
               <select
                 aria-label="Seleccionar organización"
@@ -212,7 +212,7 @@ export default function Layout() {
         )}
       </header>
 
-      <main className="parallax-depth relative z-10 mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+      <main className="parallax-depth relative z-10 mx-auto min-w-0 max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
         <Outlet />
       </main>
     </div>

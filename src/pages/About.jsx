@@ -260,7 +260,7 @@ const languages = [
 
 function InfoCard({ icon: Icon, title, text, bullets }) {
   return (
-    <article className="motion-card rounded-lg border border-white/10 bg-card/75 p-5 shadow-lg shadow-black/15 backdrop-blur">
+    <article className="motion-card min-w-0 rounded-lg border border-white/10 bg-card/75 p-5 shadow-lg shadow-black/15 backdrop-blur">
       <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-lg border border-primary/25 bg-primary/10 text-primary">
         <Icon className="h-5 w-5" />
       </div>
@@ -302,15 +302,15 @@ export default function About() {
   );
 
   return (
-    <div className="space-y-8">
+    <div className="min-w-0 space-y-8 pb-10">
       <section className="ambient-panel motion-card relative overflow-hidden rounded-xl border border-white/10 bg-card/75 p-5 shadow-2xl shadow-black/20 backdrop-blur-xl sm:p-7">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-          <div className="max-w-3xl">
+        <div className="flex min-w-0 flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+          <div className="min-w-0 max-w-3xl">
             <p className="mb-2 text-xs font-semibold uppercase tracking-[0.22em] text-primary">
               {t.badge}
             </p>
-            <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-5xl">
+            <h1 className="break-words text-3xl font-bold tracking-tight text-foreground sm:text-5xl">
               {t.title}
             </h1>
             <p className="mt-4 text-base leading-7 text-muted-foreground">
@@ -318,14 +318,14 @@ export default function About() {
             </p>
           </div>
 
-          <div className="flex rounded-lg border border-white/10 bg-background/70 p-1">
+          <div className="flex w-full rounded-lg border border-white/10 bg-background/70 p-1 sm:w-auto">
             {languages.map((item) => (
               <Button
                 key={item.key}
                 type="button"
                 variant={language === item.key ? "default" : "ghost"}
                 size="sm"
-                className="gap-2"
+                className="flex-1 gap-2 sm:flex-none"
                 onClick={() => setLanguage(item.key)}
                 aria-pressed={language === item.key}
               >
@@ -345,14 +345,14 @@ export default function About() {
         </div>
       </section>
 
-      <section className="grid gap-4 md:grid-cols-2">
+      <section className="grid min-w-0 gap-4 md:grid-cols-2">
         {t.sections.map((section) => (
           <InfoCard key={section.title} {...section} />
         ))}
       </section>
 
-      <section className="grid gap-6 lg:grid-cols-[1fr_0.95fr]">
-        <article className="motion-card rounded-lg border border-white/10 bg-card/75 p-5 shadow-lg shadow-black/15 backdrop-blur">
+      <section className="grid min-w-0 gap-6 lg:grid-cols-[1fr_0.95fr]">
+        <article className="motion-card min-w-0 rounded-lg border border-white/10 bg-card/75 p-5 shadow-lg shadow-black/15 backdrop-blur">
           <h2 className="text-xl font-semibold text-foreground">
             {t.featuresTitle}
           </h2>
@@ -366,7 +366,7 @@ export default function About() {
           </div>
         </article>
 
-        <article className="motion-card rounded-lg border border-white/10 bg-card/75 p-5 shadow-lg shadow-black/15 backdrop-blur">
+        <article className="motion-card min-w-0 rounded-lg border border-white/10 bg-card/75 p-5 shadow-lg shadow-black/15 backdrop-blur">
           <h2 className="text-xl font-semibold text-foreground">{t.techTitle}</h2>
           <div className="mt-5 space-y-4">
             {t.techGroups.map((group) => (
@@ -391,12 +391,12 @@ export default function About() {
           </p>
         </div>
 
-        <div className="grid gap-3 lg:grid-cols-[1fr_auto_1fr_auto_1fr_auto_1fr] lg:items-center">
+        <div className="grid min-w-0 gap-3 sm:grid-cols-2 lg:grid-cols-[1fr_auto_1fr_auto_1fr_auto_1fr] lg:items-center">
           {t.architecture.map((item, index) => {
             const Icon = item.icon;
             return (
-              <div key={item.label} className="contents">
-                <div className="motion-card rounded-lg border border-white/10 bg-white/[0.03] p-4">
+              <div key={item.label} className="min-w-0 contents">
+                <div className="motion-card min-w-0 rounded-lg border border-white/10 bg-white/[0.03] p-4">
                   <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg border border-primary/25 bg-primary/10 text-primary">
                     <Icon className="h-5 w-5" />
                   </div>
@@ -414,8 +414,8 @@ export default function About() {
         </div>
       </section>
 
-      <section className="grid gap-6 lg:grid-cols-[0.95fr_1fr]">
-        <article className="motion-card rounded-lg border border-white/10 bg-card/75 p-5 shadow-lg shadow-black/15 backdrop-blur">
+      <section className="grid min-w-0 gap-6 lg:grid-cols-[0.95fr_1fr]">
+        <article className="motion-card min-w-0 rounded-lg border border-white/10 bg-card/75 p-5 shadow-lg shadow-black/15 backdrop-blur">
           <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-lg border border-accent/25 bg-accent/10 text-accent">
             <UsersRound className="h-5 w-5" />
           </div>
@@ -448,7 +448,7 @@ export default function About() {
           </div>
         </article>
 
-        <article className="motion-card rounded-lg border border-white/10 bg-card/75 p-5 shadow-lg shadow-black/15 backdrop-blur">
+        <article className="motion-card min-w-0 rounded-lg border border-white/10 bg-card/75 p-5 shadow-lg shadow-black/15 backdrop-blur">
           <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-lg border border-primary/25 bg-primary/10 text-primary">
             <Github className="h-5 w-5" />
           </div>
