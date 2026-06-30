@@ -8,6 +8,7 @@ import { AuthProvider, useAuth } from "@/lib/AuthContext";
 import PageNotFound from "@/lib/PageNotFound";
 import { queryClientInstance } from "@/lib/query-client";
 import { WorkspaceProvider } from "@/lib/WorkspaceContext";
+import About from "@/pages/About";
 import Dashboard from "@/pages/Dashboard";
 import Login from "@/pages/Login";
 import Workspace from "@/pages/Workspace";
@@ -33,6 +34,7 @@ const AuthenticatedApp = () => {
           <Route path="/board" element={<TaskBoard />} />
           <Route path="/tasks" element={<TaskList />} />
           <Route path="/workspace" element={<Workspace />} />
+          <Route path="/about" element={<About />} />
           <Route path="*" element={<PageNotFound />} />
         </Route>
       </Routes>

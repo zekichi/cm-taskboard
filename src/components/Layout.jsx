@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
-import { Columns3, LayoutDashboard, List, LogOut, Menu, Plus, Users, X } from "lucide-react";
+import { Columns3, FileText, LayoutDashboard, List, LogOut, Menu, Plus, Users, X } from "lucide-react";
 
 import InteractiveBackground from "@/components/effects/InteractiveBackground";
 import { useAuth } from "@/lib/AuthContext";
@@ -13,6 +13,7 @@ const navItems = [
   { to: "/board", icon: Columns3, label: "Tablero" },
   { to: "/tasks", icon: List, label: "Lista" },
   { to: "/workspace", icon: Users, label: "Equipo" },
+  { to: "/about", icon: FileText, label: "Informe" },
 ];
 
 const selectClass =
