@@ -63,7 +63,6 @@ export default function InteractiveBackground({ variant = "app", className = "" 
     let lastTime = performance.now();
     let particles = [];
     const pointer = { x: -9999, y: -9999, active: false, strength: 0 };
-    const parent = root.parentElement;
 
     const createParticle = (index, count) => {
       const direction = (index / count) * TAU + Math.random() * 0.8;
@@ -221,21 +220,11 @@ export default function InteractiveBackground({ variant = "app", className = "" 
       root.style.setProperty("--cursor-y", `${y}px`);
       root.style.setProperty("--cursor-opacity", inside ? String(config.cursorOpacity) : "0");
 
-      if (parent && inside) {
-        const parallaxX = ((x / rect.width) - 0.5) * 10;
-        const parallaxY = ((y / rect.height) - 0.5) * -10;
-        parent.style.setProperty("--parallax-x", `${parallaxX.toFixed(2)}deg`);
-        parent.style.setProperty("--parallax-y", `${parallaxY.toFixed(2)}deg`);
-      }
     };
 
     const clearPointer = () => {
       pointer.active = false;
       root.style.setProperty("--cursor-opacity", "0");
-      if (parent) {
-        parent.style.setProperty("--parallax-x", "0deg");
-        parent.style.setProperty("--parallax-y", "0deg");
-      }
     };
 
     resize();
@@ -251,10 +240,6 @@ export default function InteractiveBackground({ variant = "app", className = "" 
       window.removeEventListener("pointermove", updatePointer);
       window.removeEventListener("pointerleave", clearPointer);
       window.removeEventListener("blur", clearPointer);
-      if (parent) {
-        parent.style.removeProperty("--parallax-x");
-        parent.style.removeProperty("--parallax-y");
-      }
     };
   }, [variant]);
 

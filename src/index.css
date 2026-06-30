@@ -8,8 +8,6 @@
   :root {
     --font-inter: "Inter", sans-serif;
     --font-display: "Space Grotesk", sans-serif;
-    --parallax-x: 0deg;
-    --parallax-y: 0deg;
     --background: 226 45% 6%;
     --foreground: 210 35% 96%;
     --card: 224 38% 10%;
@@ -88,15 +86,24 @@
 
   html {
     color-scheme: dark;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
   }
 
   body {
     @apply bg-background text-foreground font-inter antialiased;
     min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
     background:
       radial-gradient(circle at 18% 10%, hsl(184 95% 48% / 0.16), transparent 28rem),
       radial-gradient(circle at 82% 0%, hsl(263 92% 68% / 0.18), transparent 26rem),
       linear-gradient(135deg, hsl(226 45% 6%) 0%, hsl(229 45% 8%) 48%, hsl(222 46% 7%) 100%);
+  }
+
+  #root {
+    min-height: 100vh;
+    overflow-x: clip;
   }
 
   h1,
@@ -121,10 +128,12 @@
 
 @layer components {
   .interactive-background {
-    @apply pointer-events-none absolute inset-0 overflow-hidden;
+    @apply pointer-events-none fixed inset-0 overflow-hidden;
     --cursor-x: 50%;
     --cursor-y: 50%;
     --cursor-opacity: 0;
+    z-index: 0;
+    contain: strict;
   }
 
   .interactive-background canvas {
@@ -190,16 +199,6 @@
     background-size: 34px 34px;
     mask-image: linear-gradient(to bottom, black 0%, transparent 78%);
     animation: grid-drift 26s linear infinite;
-  }
-
-  .parallax-depth {
-    transform:
-      perspective(1200px)
-      rotateX(var(--parallax-y))
-      rotateY(var(--parallax-x))
-      translateZ(0);
-    transition: transform 240ms ease-out;
-    transform-style: preserve-3d;
   }
 
   .motion-card {
@@ -313,7 +312,4 @@
     transform: none;
   }
 
-  .parallax-depth {
-    transform: none;
-  }
 }

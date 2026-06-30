@@ -212,7 +212,7 @@ export default function Layout() {
         )}
       </header>
 
-      <main className="parallax-depth relative z-10 mx-auto min-w-0 max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+      <main className="relative z-10 mx-auto min-w-0 max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
         <Outlet />
       </main>
     </div>
